@@ -1,0 +1,1098 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">		
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/mui.preview.css" />
+		<script type="text/javascript" src="js/common.js" ></script>
+		<style type="text/css">
+			body {
+				font-family: "微软雅黑";
+			}
+			
+			/*
+			 * 开始:顶部bar
+			 */
+			header {
+				background-color: #6A7D8F !important;
+				color: #FAFAFA;
+			}
+			
+			h1 {
+				color: #FAFAFA !important;
+			}			
+			/*
+			 * 结束：顶部bar
+			 */		
+
+			
+			/*
+			 *选择器区 
+			 */
+			.selectBox{
+				padding: 15px 10px;
+				background-color: #81C6CD;
+			}
+			.selectBox button{
+				width: 100%;
+			}
+			.selectBox .warp{
+				overflow: hidden;
+				font-size: 14px;
+			}
+			.selectBox .warp>div{
+				width: 50%;
+				float: left;
+			}
+			.selectBox .warp button{
+				margin-top: 10px;
+			}
+			.selectBox .warp .warp-left{
+				padding-right: 5px;
+			}
+			.selectBox .warp .warp-left .cargroud{
+				margin-top: 10px;
+			}
+			.selectBox .warp .warp-left .cargroud span{
+				display: inline-block;
+				height: 33px;
+				line-height: 33px;
+				position: absolute;
+			}			
+			.selectBox .warp .warp-left .cargroud input[type="text"]{
+				height: 33px;
+				margin-bottom: 0;
+				width: 80%;
+				margin-left: 20%;
+			}
+			::-webkit-input-placeholder {
+				font-size: 14px;
+			}			
+			.selectBox .warp .warp-right{
+				padding-left: 5px;
+			}
+			.selectBox .warp .warp-right #selectAll{
+				height: 33px;
+				margin-top: 10px;
+			}
+			.selectBox .warp .warp-right #selectAll label{
+				text-align: center;
+			}
+			.warp #btnsave , .warp #btnsubmit {
+				width: 25%;
+				position: absolute;
+				top: 12px;
+			}
+			/*
+			 * 选择区End
+			 */
+			
+			/*
+			 * 下拉刷新内容
+			 */
+			#pullrefresh{
+				top: 200px;
+			}
+			#pullrefresh .mui-pull-top-pocket{
+				top: 0px;
+			}
+			#pullrefresh .mui-scroll .mui-segmented-control{
+				border-radius: 0px;
+				font-size: 13px;
+				background-color: #EFEFF4;
+				display: none;
+			}
+			#pullrefresh .mui-scroll .timeout{
+				text-align: center;
+				margin: 10px;
+				display: none;
+			}
+			#pullrefresh .mui-scroll .mui-control-content .selectArea {
+				
+			}
+			#pullrefresh .mui-scroll .mui-control-content .select-top{
+				position: relative;
+				padding: 10px;
+			}
+			#pullrefresh .mui-scroll .mui-control-content .select-top .itemText{
+				display: inline-block;
+				height: 45px;
+				line-height: 45px;
+				text-indent: 10px;
+				font-size: 16px;
+			}
+			#pullrefresh .mui-scroll .mui-control-content .select-top .mui-icon{
+				width: 20%;
+				text-align: center;
+				position: absolute;
+			}
+			#pullrefresh .mui-scroll .mui-control-content .select-top .mui-icon-camera{
+				right: 30%;
+				font-size: 41px;	
+				top: 10px;					
+			}
+			#pullrefresh .mui-scroll .mui-control-content .select-top .mui-icon-image{				
+				font-size: 30px;		
+				right: 5%;
+				top: 16px;
+			}
+			#pullrefresh .mui-scroll .mui-control-content .select-main{
+				font-size: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<span class="mui-icon mui-icon-arrowleft mui-action-back"></span>
+			<h1 class="mui-title">车辆巡检</h1>
+		</header>	
+		<div class="mui-content">
+			<div class="selectBox">
+				<div class="warp">
+					<div class="warp-left">
+						<div class="cargroud">
+							<span class="cartext">粤S</span>
+							<input type="text" id="carnumber" maxlength="6" onpaste="return false" ondragenter="return false"  onkeyup="this.value=checkStr(this.value)" placeholder="请输入车牌号" />							
+						</div>
+						<button type="button" class="mui-btn" id="timeToCar">请选择上车时间</button>
+						<button type="button"  class="mui-btn mui-btn-primary" id="save">保存</button>
+						<div id="SavePopover" class="mui-popover">
+						  <li class="mui-table-view-cell" style="list-style: none;">
+						  	<a href="#">请选择要保存的项目：</a>
+						  	<button type="button" class="mui-btn mui-btn-primary" id="btnsave">确定</button>
+						  </li>
+						 	 <div class="mui-input-row mui-checkbox">
+			  					<label>车辆整洁</label>
+			  					<input name="checkbox1" value="carzj" type="checkbox">
+							</div>
+						 	 <div class="mui-input-row mui-checkbox">
+			  					<label>车内服务设施</label>
+			  					<input name="checkbox1" value="carss" type="checkbox">
+							</div>				
+						 	 <div class="mui-input-row mui-checkbox">
+			  					<label>车厢服务</label>
+			  					<input name="checkbox1" value="carfw" type="checkbox">
+							</div>
+							<div class="mui-input-row mui-checkbox">
+			  					<label>乘客满意度</label>
+			  					<input name="checkbox1" value="satis" type="checkbox">
+							</div>	
+						</div>						
+					</div>
+					<div class="warp-right">
+						<button type="button" class="mui-btn" id="weather">晴天</button>		
+						<div class="mui-input-row mui-checkbox" id="selectAll">
+						  <label>全选为合格</label>
+						  <input name="checkbox1" value="Item 1" type="checkbox">
+						</div>
+						<button type="button"  class="mui-btn mui-btn-danger" id="submit">提交</button>
+						<div id="SubmitPopover" class="mui-popover">
+						  <li class="mui-table-view-cell" style="list-style: none;">
+						  	<a href="#">请选择要提交的项目：</a>
+						  	<button type="button" class="mui-btn mui-btn-primary" id="btnsubmit">确定</button>
+						  </li>
+						 	 <div class="mui-input-row mui-checkbox">
+			  					<label>车辆整洁</label>
+			  					<input name="checkbox2" value="carzj" type="checkbox">
+							</div>	
+						 	 <div class="mui-input-row mui-checkbox">
+			  					<label>车内服务设施</label>
+			  					<input name="checkbox2" value="carss" type="checkbox">
+							</div>	
+						 	 <div class="mui-input-row mui-checkbox">
+			  					<label>车厢服务</label>
+			  					<input name="checkbox2" value="carfw" type="checkbox">
+							</div>
+							<div class="mui-input-row mui-checkbox">
+			  					<label>乘客满意度</label>
+			  					<input name="checkbox2" value="satis" type="checkbox">
+							</div>	
+						</div>						
+					</div>
+				</div>
+			</div>
+			
+			<div id="pullrefresh" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<div class="timeout">
+						<span class="mui-badge mui-badge-warning">
+							请求超时,请下拉重新获取数据
+							<span class="mui-icon mui-icon-refreshempty" style="font-size: 18px;"></span>
+						</span>
+					</div>
+					<div id="segmentedControl" class="mui-segmented-control">
+					</div>
+					<div id="item1" class="mui-control-content mui-active">
+
+					</div>
+					<div id="item3" class="mui-control-content">
+						<ul class="mui-table-view">
+						</ul>
+					</div>	
+					<div id="item2" class="mui-control-content">
+						<ul class="mui-table-view">
+						</ul>
+					</div>								
+				</div>
+			</div>
+			
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/mui.picker.min.js"></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+		<script type="text/javascript" src="js/mui.zoom.js" ></script>
+		<script type="text/javascript" src="js/mui.previewimage.js" ></script>		
+		<script type="text/javascript">		
+			mui.init({
+				swipeBack:true,		
+				pullRefresh: {   //下拉刷新配置项
+					container: '#pullrefresh',
+					down: {
+						height : 65,
+						callback: pulldownRefresh,
+						auto:true,
+						contentdown:"下拉刷新巡检项",
+						contentrefresh:"数据加载中..."
+					}
+				}				
+			});																				
+			
+			function Inspection() {
+				this.scrguid = "";
+				this.scpguid = "";
+				this.busno = "";
+				this.weather = "";
+				this.bustime = "";
+				this.checkline = "";
+				this.pageFlag = 1;
+				this.planno = "";
+				this.issubmit = null;
+				this.showPage = null;
+				this.schedule = null;
+				this.checkPlanPage = null;
+			}
+			function Item(checktype,checkname) {
+				Inspection.call(this);
+				this.itemName = '';
+				this.checktype = checktype;
+				this.checkname = checkname;
+				this.checkitem = [];
+			}
+			Item.prototype = Object.create(Inspection.prototype);
+			Item.prototype.constructor = Item;
+			Item.prototype.getCheckItem = function (resolve,reject) {   //ajax获取检查项目
+				mui.ajax({
+					url : config.getCheckItem,
+					dataType : "json",
+					type : "GET",
+					async : true,
+					timeout : 2000,
+					crossDomain : true,
+					data : {
+						"checktype" : this.checktype,
+						"numPerPage":"50"							
+					},
+					success : function (data) {
+						resolve(data.jsonData.list);
+					},
+					error : function(xhr,type,errorThrown) {
+						console.log('请求超时');
+						reject('timeout');						
+					}
+				});
+			};
+			Item.prototype.setCheckItem = function (value) {    //设置每一个巡检对象的检查项
+				this.checkitem = value;
+			}
+				
+			let	check = {
+				checkType : [],
+				itemArr : [],
+				ImageArr : [],  
+				weatherElement : document.querySelector('#weather'),
+				timesElement : document.querySelector('#timeToCar'),
+				segementedEle : document.querySelector('#segmentedControl'),
+				detailItem : document.querySelectorAll('.mui-control-content'),
+				timeout : document.querySelector('.timeout'),
+				carnum : document.querySelector('#carnumber'),
+				selectors : ['#weather','#timeToCar','#selectAll','#save','#submit'],
+				requestCheckTypeUrl : config.getAllCheckType,
+				requestCheckType : function (){   //请求巡检项
+					let promise = new Promise(function(resolve, reject){
+						mui.ajax({
+							url:this.requestCheckTypeUrl,
+							dataType : "json",
+							type:"GET",
+							async:true,
+							timeout : 8000,
+							crossDomain:true,	
+							success:function(data){									
+								resolve(data.jsonData);
+							},
+							error: function(xhr,type,errorThrown){
+								console.log('请求超时');
+								reject('timeout');
+							}
+						});	
+					}.bind(this));
+					return promise;
+				},
+				setCheckType : function (value) {    //设置检查类型
+					this.checkType = value;
+				},
+				createItemObj : function () {  //创建巡检对象
+					this.itemArr.splice(0,this.itemArr.length);
+					let checkType = this.checkType;
+					let len = checkType.length - 1;						
+					for (let i = 0 ; i < len ; i++){
+						let item = new Item(checkType[i].codeId,checkType[i].valueName);	
+						item.itemName = 'item' + (i+1);
+						this.itemArr.push(item);
+					}
+				},
+				bindEventListener : function () {
+					
+					//监听条件选择
+					let _this = this;
+					let arr = this.selectors;
+					let len = arr.length;
+					for(let i = 0 ; i < len ; i++){
+						mui('.selectBox').on('tap',arr[i],function(){
+							let elementId = this.id;
+							switch (elementId){
+								case 'weather':
+									_this.createWeatherPicker();
+									break;
+								case 'timeToCar':
+									_this.createTimePicker();
+									break;
+								case 'selectAll':
+									_this.selectAllItem(this);
+									break;
+								case 'save':
+									break;
+								case 'submit':
+									break;										
+							}
+						});							
+					}
+					
+					
+					//监听点击块
+					window.addEventListener('getActive',function(eve){
+						let tapitem = eve.detail.tapitem;
+						console.log('点击'+tapitem+'巡检项');
+						switch (tapitem){
+							case 'clean':
+								$('#segmentedControl').find("a[href='#item1']").addClass('mui-active').siblings('a').removeClass('mui-active');
+								$('.mui-scroll').find('#item1').addClass('mui-active').siblings('.mui-control-content').removeClass('mui-active');
+								break;
+							case 'installation':
+								$('#segmentedControl').find("a[href='#item3']").addClass('mui-active').siblings('a').removeClass('mui-active');							
+								$('.mui-scroll').find('#item3').addClass('mui-active').siblings('.mui-control-content').removeClass('mui-active');								
+								break;
+							case 'service':
+								$('#segmentedControl').find("a[href='#item2']").addClass('mui-active').siblings('a').removeClass('mui-active');														
+								$('.mui-scroll').find('#item2').addClass('mui-active').siblings('.mui-control-content').removeClass('mui-active');
+								break;								
+						}
+					});
+					
+					//返回上一层清空数据
+					let o_back = mui.back;
+					mui.back = function(){
+						$('#weather').html("晴天");
+						$('#weather').css('color','black');
+						$('#weather').css('background-color','#FFFFFF');
+						$('#timeToCar').html("请选择上车时间");
+						$('#timeToCar').css('color','black');
+						$('#timeToCar').css('background-color','#FFFFFF');	
+						$('#carnumber').val("");
+						o_back();
+					}	
+					
+					//巡检项点击监听---根据是否全选为合格改变checkbox状态
+					mui('#segmentedControl').on('tap','.mui-control-item',function () {
+						let blockId = this.getAttribute('href');
+						let countAll = 0;
+						let countSelected = 0;
+						let dom = document.querySelector('#selectAll').querySelector('input[type="checkbox"]');
+						$(blockId).find('.pass').each(function(){
+							countAll++;						
+							if($(this).hasClass('mui-selected')){
+								countSelected++;
+							}
+						});
+						
+						if (countSelected < countAll){
+							dom.checked = false;							
+						}else{
+							dom.checked = true;												
+						}
+					});		
+					
+					//监听图片删除事件
+					window.addEventListener('changePic',function(event){
+						let domId = event.detail.domId;
+						let imgArr = event.detail.data;
+						let parentDom = document.querySelector('#'+domId);
+						let imgDoms = parentDom.querySelectorAll('img');
+						let imgDomsLen = imgDoms.length;
+						if (imgArr.length === 0 ){
+							for (let i = 0 ; i < imgDomsLen ; i++){
+								parentDom.querySelector('.select-top').removeChild(imgDoms[i]);
+							}
+							parentDom.querySelector('.mui-icon-image').style.display = 'none';
+						}else{
+							for (let i = 0 ; i < imgDomsLen ; i++){
+								if (imgArr.indexOf(imgDoms[i].src) === -1 ){
+									console.log('删除图片所属块：'+parentDom.className);
+									console.log('删除的图片路径'+imgDoms[i].src); 
+									parentDom.querySelector('.select-top').removeChild(imgDoms[i]);
+								}
+							}
+						}
+					});
+					
+					//监听保存按钮
+					mui('.warp-left').on('tap','#save',function(){
+						let isNotEmpty = _this.checkValueIsEmpty();
+						if ( !isNotEmpty){
+							mui.alert('请将巡检信息填写完毕');	
+						}else{
+							_this.countAllSelected('#SavePopover');
+							mui('#SavePopover').popover('show',this);																				
+						}
+					});
+					//监听提交按钮
+					mui('.warp-right').on('tap','#submit',function(){
+						let isNotEmpty = _this.checkValueIsEmpty();
+						if ( !isNotEmpty){
+							mui.alert('请将巡检信息填写完毕');	
+						}else{
+							_this.countAllSelected('#SubmitPopover');
+							mui('#SubmitPopover').popover('show',this);																				
+						}						
+					});	
+					
+					//监听二层保存按钮
+					mui('#SavePopover').on('tap','#btnsave',function(){
+						let res = _this.checkedAtLeastOne(this);
+						if (!res){
+							mui.alert('至少完成并勾选一个巡检项目');
+						}else{
+							console.log('可以开始保存数据');
+							new Promise(function(reslove,reject){
+								_this.uploadImg(reslove);
+							}).then(function(data){
+								console.log(data);
+								_this.uploadData(0);   //参数0为保存
+							});
+						}
+						mui('#SavePopover').popover('hide',this);																				
+					});
+					//监听二层提交按钮
+					mui('#SubmitPopover').on('tap','#btnsubmit',function(){
+						let res = _this.checkedAtLeastOne(this);
+						if (!res){
+							mui.alert('至少完成并勾选一个巡检项目');
+						}else{
+							console.log('可以开始提交数据');
+							new Promise(function(reslove,reject){
+								_this.uploadImg(reslove);
+							}).then(function(data){
+								_this.uploadData(1);   //参数1为提交
+							});
+						}
+						mui('#SubmitPopover').popover('hide',this);																				
+					});
+				},
+				createTimePicker : function () {            //时间选择器
+					let timePicker = new mui.DtPicker();
+					timePicker.show(function(selectItems){
+						this.timesElement.innerHTML = selectItems.value;
+						this.timesElement.style.color = '#fafafa';
+						this.timesElement.style.backgroundColor = '#2AC845';
+						timePicker.dispose();
+					}.bind(this));
+				},
+				createWeatherPicker : function () {         //天气选择器
+					let weatherPicker  = new mui.PopPicker();
+					weatherPicker.setData(config.weatherData);
+					weatherPicker.pickers[0].setSelectedValue('sunny',2000);	
+					weatherPicker.show(function(SelectedItem) {
+						this.weatherElement.innerHTML = SelectedItem[0].text;
+						this.weatherElement.style.color = '#fafafa',
+						this.weatherElement.style.backgroundColor = '#2AC845';
+					}.bind(this));						
+				},
+
+				selectAllItem : function (obj) {   //全选所有检查项
+					let selectObj = obj.querySelector('input[type="checkbox"]');
+					let selected = this.segementedEle.querySelector('.mui-active').getAttribute('href');					
+					if (!selectObj.checked){
+						$(selected).find('.pass').each(function(){
+							if(!$(this).hasClass('mui-selected'))
+								$(this).addClass('mui-selected');
+						}).siblings().removeClass('mui-selected');					
+					}else{
+						$(selected).find('.pass').each(function(){
+							if($(this).hasClass('mui-selected'))
+								$(this).removeClass('mui-selected');
+						});						
+					}
+				},
+				cleanDom : function () {     //清理dom
+					document.querySelector('#selectAll').querySelector('input[type="checkbox"]').checked = false;
+					this.segementedEle.rmac();	
+					let len = this.detailItem.length;
+					for (let i = 0 ; i < len ; i++){
+						this.detailItem[i].rmac();
+					}
+				},
+				printDom : function () {    //根据对象遍历dom节点
+					this.cleanDom();
+					let checkObj = this;
+					mui.each(this.itemArr,function(index, value){
+						console.log(index+'---'+this.checkname);
+						let tapItem = document.createElement('a');
+						tapItem.className = index === 0 ? 'mui-control-item mui-active' : 'mui-control-item';
+						tapItem.href = '#'+this.itemName;
+						tapItem.innerHTML = this.checkname;
+						checkObj.segementedEle.appendChild(tapItem);
+						
+						let tapBlock = document.querySelector('#'+this.itemName);	
+						console.log(this.itemName);
+						let areaItem = this.itemName;
+						mui.each(this.checkitem,function(index,value){
+							let selectArea = document.createElement('div');
+							selectArea.className = 'selectArea';
+							selectArea.id = areaItem+'-'+index;
+							let selectTop = document.createElement('div');
+							selectTop.className = 'select-top';								
+							let itemText = document.createElement('span');
+							itemText.className = 'itemText';
+							itemText.innerHTML = this.itemname;									
+							let camera = document.createElement('span');
+							camera.className = 'mui-icon mui-icon-camera';								
+							let pic = document.createElement('span');
+							pic.className = 'mui-icon mui-icon-image';
+							pic.style.display = 'none';
+							
+							let sccguid = document.createElement('input');
+							sccguid.type = 'hidden';
+							sccguid.value = this.sccguid;
+							selectTop.appendChild(sccguid);
+							
+							selectTop.appendChild(itemText);
+							selectTop.appendChild(camera);
+							selectTop.appendChild(pic);
+							
+							let selectMain = document.createElement('div');
+							selectMain.className = 'select-main';
+							let ul = document.createElement('ul');
+							ul.className = 'mui-table-view mui-table-view-radio';
+							if ( this.escore != -1){
+								let liPass = document.createElement('li');
+								liPass.className = 'mui-table-view-cell excellent';		
+								let lipassA = document.createElement('a');
+								lipassA.className = 'mui-navigate-right';
+								lipassA.innerHTML = '优秀';
+								let inputPassScore = document.createElement('input');
+								inputPassScore.setAttribute('type','hidden');
+								inputPassScore.setAttribute('value',this.escore);
+								liPass.appendChild(lipassA);
+								liPass.appendChild(inputPassScore);
+								ul.appendChild(liPass);
+							}
+							if ( this.gscore != -1){
+								let liPass = document.createElement('li');
+								liPass.className = 'mui-table-view-cell fine';		
+								let lipassA = document.createElement('a');
+								lipassA.className = 'mui-navigate-right';
+								lipassA.innerHTML = '良好';
+								let inputPassScore = document.createElement('input');
+								inputPassScore.setAttribute('type','hidden');
+								inputPassScore.setAttribute('value',this.gscore);
+								liPass.appendChild(lipassA);
+								liPass.appendChild(inputPassScore);
+								ul.appendChild(liPass);
+							}								
+							if ( this.mscore != -1){
+								let liPass = document.createElement('li');
+								liPass.className = 'mui-table-view-cell pass';		
+								let lipassA = document.createElement('a');
+								lipassA.className = 'mui-navigate-right';
+								lipassA.innerHTML = '合格';
+								let inputPassScore = document.createElement('input');
+								inputPassScore.setAttribute('type','hidden');
+								inputPassScore.setAttribute('value',this.mscore);
+								liPass.appendChild(lipassA);
+								liPass.appendChild(inputPassScore);
+								ul.appendChild(liPass);
+							}
+							if ( this.bscore != -1){
+								let liPass = document.createElement('li');
+								liPass.className = 'mui-table-view-cell fail';		
+								let lipassA = document.createElement('a');
+								lipassA.className = 'mui-navigate-right';
+								lipassA.innerHTML = '不合格';
+								let inputPassScore = document.createElement('input');
+								inputPassScore.setAttribute('type','hidden');
+								inputPassScore.setAttribute('value',this.bscore);
+								liPass.appendChild(lipassA);
+								liPass.appendChild(inputPassScore);
+								ul.appendChild(liPass);
+							}
+							selectMain.appendChild(ul);
+							
+							selectArea.appendChild(selectTop);
+							selectArea.appendChild(selectMain);
+							
+							tapBlock.appendChild(selectArea);
+						});
+						let remark = document.createElement('div');
+						remark.className = 'mui-input-row';
+						remark.style.margin = '10px 5px 0px';
+						let textArea = document.createElement('textarea');
+						textArea.rows = 5;
+						textArea.placeholder = '巡检备注(选填)';
+						remark.appendChild(textArea);
+						tapBlock.appendChild(remark);
+					});
+					this.segementedEle.style.display = 'block';
+					this.timeout.style.display = 'none';
+					$('.mui-scroll').find('#item1').addClass('mui-active').siblings('.mui-control-content').removeClass('mui-active');					
+				},
+				checkValueIsEmpty : function () {  //检查控件值是否为空
+					let carnum = this.carnum.value == '' ? false : true;
+					let time = this.timesElement.innerHTML == '请选择上车时间' ? false : true;
+					if (carnum && time ){
+						return true;
+					}else{
+						return false;
+					}
+				},
+				addCameraListener : function () { // 监听拍照按钮
+					let _this = this;
+					mui('.selectArea').on('tap','.mui-icon-camera',function(){
+						let domObj = this;
+						if ( !_this.checkValueIsEmpty() ){
+							mui.alert('请将巡检信息填写完毕');	
+						}else{
+							plus.nativeUI.actionSheet( {title:"选择照片",cancel:"取消",buttons:[{title:"即时拍照"},{title:"从相册选取"}]}, function(e){
+								switch (e.index){
+									case 0:
+										break;
+									case 1:
+										_this.takeApicture(domObj);
+										break;
+									case 2:
+										_this.choosePicFromAlbum(domObj);
+										break;
+									default:
+										break;
+								}
+							});							
+						}
+					})
+				},					
+				addPicListener : function () { //监听相册按钮
+					mui('.selectArea').on('tap','.mui-icon-image',function(){
+						let parent = this.parentNode.parentNode;
+						let imgDomArr = parent.querySelectorAll('img');
+						let len = imgDomArr.length;
+						let imgArr = [];					
+						for ( let i = 0 ; i < len ; i++){
+							imgArr.push(imgDomArr[i].src);
+						}
+	            		mui.openWindow({
+							url: 'album.html',
+							id: 'album',
+							extras:{
+								imgArray: imgArr,
+								domId: parent.id
+							},
+							waiting:{
+								autoShow:false
+							}
+						});						
+					});
+				},
+				takeApicture : function (dom) {   //即时拍照
+					let cmr = plus.camera.getCamera();
+					let res = cmr.supportedImageResolutions[0];
+					let fmt = cmr.supportedImageFormats[0];
+					let _this = this;
+					cmr.captureImage(function(e) {
+							plus.io.resolveLocalFileSystemURL(e, function(entry) {
+								let path = entry.toLocalURL();
+								_this.dealPicWithPromise(path,dom);								
+							});
+						},
+						function(error) {
+							console.log("图片获取失败,原因为: " + error.message);
+						}, {
+							resolution: res,
+							format: fmt
+						}
+					);					
+				},
+				choosePicFromAlbum : function (dom) {  //从相册中选取
+					let _this = this;
+				    plus.gallery.pick( function(path){
+//				    	let checkItem = dom.previousSibling.innerHTML;
+//						_this.appendImg(path,checkItem,dom);
+						_this.dealPicWithPromise(path,dom);
+				    }, function ( e ) {
+				    	console.log( "取消选择图片" );
+				    }, {filter:"image"} );					
+				},
+				dealPicWithPromise : function (path,dom) {   //promise对象处理图像
+					plus.nativeUI.showWaiting('图片处理中');
+					let _this = this;
+					new Promise(function(resolve,reject){
+						_this.appendImg(path,dom,resolve);
+					}).then(function(data){
+						let imgBase64 = data;
+						return new Promise(function(resolve,rejecr){
+							_this.base64ToBitMap(imgBase64,resolve);	
+						});
+					}).then(function(data){
+						_this.insertImg(data,dom);
+						plus.nativeUI.closeWaiting();	
+						mui.toast('点击右方图标查看相册');
+					})
+				},
+				appendImg : function(path,dom,resolve) { //压缩图像
+					let check = this;
+				    let checkItem = dom.previousSibling.innerHTML;
+					let img = new Image();
+					img.src = path;
+					img.onload = function () {
+			            let that = this;
+			            //生成比例 
+			            let w = that.width,
+			                h = that.height,
+			                scale = w / h; 
+			                w = 480 || w;              //480  你想压缩到多大，改这里
+			                h = w / scale;
+			
+			            //生成canvas
+			            let canvas = document.createElement('canvas');				
+			            let ctx = canvas.getContext('2d');	
+			            let imgfile;
+			            $(canvas).attr({width : w, height : h});			
+			            ctx.drawImage(that, 0, 0, w, h);
+			            /*
+			             * 水印绘制开始
+			             */
+			            ctx.font = "15px microsoft yahei";
+			            ctx.fillStyle = "#FAFAFA";
+         				ctx.fillText('线路：'+check.waysElement.innerHTML,5,h-67);
+         				ctx.fillText('车牌：粤S '+check.carnum.value,5,h-48);
+			            ctx.fillText('巡检项目：'+checkItem,5,h-29);             				
+         				ctx.fillText("拍摄时间："+check.getNow(),5,h-10); 
+         				/*
+         				 * 水印绘制结束
+         				 */	
+         				 
+         				let base64 = canvas.toDataURL('image/jpeg', 1 || 0.8 ); //将图片转化成base64
+         				resolve(base64);      			
+					}
+				},
+				base64ToBitMap : function (base64,resolve) { //将base64格式的图片存储至手机本地
+					let bitmap = new plus.nativeObj.Bitmap();
+					bitmap.loadBase64Data(base64,function(){
+						let timestamp = (new Date()).valueOf();
+						bitmap.save('_doc/'+timestamp+'.jpg',{
+							overwrite:true,
+							quality:100
+						},function(eve){
+							resolve(eve.target);						
+						},function(error){
+							console.log('图片保存失败,原因：'+error.Message);							
+						});
+					},function(e) {
+						console.log('图片加载失败,原因：'+e.Message);
+					});
+				},
+				insertImg : function (imgsrc,dom) {     //将存储成功的图片插入到DOM中
+					let picDom = dom.nextSibling;
+					let parent = dom.parentElement;
+					picDom.style.display = 'inline-block';
+					let img = document.createElement('img');
+					img.src = imgsrc;
+					img.style.display = 'none';
+					parent.appendChild(img);
+				},
+				getNow : function () {    //获取当前时间
+					let p = this.p;
+					let myData = new Date();
+					let year = myData.getFullYear();
+					let month = myData.getMonth()+1;
+					let ndate = myData.getDate();
+					let h = myData.getHours();
+					let m = myData.getMinutes();
+					let s = myData.getSeconds();
+					let now = year+'-'+p(month)+"-"+p(ndate)+" "+p(h)+':'+p(m)+":"+p(s);
+					return now;					
+				},
+				p : function (s) { //日期补零
+    				return s < 10 ? '0' + s: s;				
+				},
+				countAllSelected : function (selector) {      //根据已勾选的巡检项数量自动勾选要保存/提交的巡检项
+					console.log(this.detailItem)
+					this.detailItem.forEach(function(dom,index){
+						let areaCount = dom.querySelectorAll('.selectArea').length;
+						let selectedCount = dom.querySelectorAll('.mui-selected').length;
+						let booleanValue = null;
+						let Element = document.querySelector(selector);
+						let inputValue = '';
+						if ( areaCount === selectedCount ){
+							booleanValue = true;
+						}else{
+							booleanValue = false;
+						}
+						switch (dom.id){
+							case 'item1':
+								inputValue = 'carzj';
+								break;
+							case 'item2':
+								inputValue = 'carfw';							
+								break;	
+							case 'item3':
+								inputValue = 'carss';						
+								break;									
+						}
+						
+						//在单个巡检项没有将全部检查项勾选的情况下不可勾选要保存/提交的项目
+						Element.querySelector('input[value="'+inputValue+'"]').disabled = !booleanValue;
+						Element.querySelector('input[value="'+inputValue+'"]').checked = booleanValue;						
+					});
+				},
+				checkedAtLeastOne : function (dom) {
+					let parent = dom.parentNode.parentNode;
+					let checkBoxs = parent.querySelectorAll('input[type="checkbox"]');
+					let counts = 0;
+					let boxLen = checkBoxs.length;
+					for (let i = 0 ; i < boxLen ; i++){
+						if (checkBoxs[i].checked === true)
+							counts++
+					}	
+					if (counts === 0){
+						return false;
+					}
+					return true;
+				},
+				uploadData : function (optionType) {
+					let _this = this;
+					let itemNameArr = [];
+					let parent = null;
+					let alertText = optionType == 0 ? '保存成功' : '提交成功';
+					if(optionType){
+						parent = document.querySelector('#SubmitPopover');
+
+					}else{
+						parent = document.querySelector('#SavePopover');
+					}
+					let checkeds = parent.querySelectorAll('input[type="checkbox"]');
+					checkeds.forEach(function(dom,index){
+						let ischecked = dom.checked;
+						if (ischecked){
+							switch (dom.value){
+								case 'carzj':
+								itemNameArr.push('item1');
+								break;
+								case 'carfw':
+								itemNameArr.push('item2');
+								break;
+								case 'carss':
+								itemNameArr.push('item3');
+							}
+						}
+					});
+					let saveContent = [];
+					this.itemArr.forEach(function(obj,index){
+						let blockId = obj.itemName;
+						if (itemNameArr.indexOf(blockId) != -1){
+							let dom = document.querySelector('#'+blockId);
+							let detailArray = [];
+							dom.querySelectorAll('.selectArea').forEach(function(item,index){
+								let sccguid = item.querySelector('.select-top').querySelector('input[type="hidden"]').value;
+								let checkScore = item.querySelector('.mui-selected').querySelector('input[type="hidden"]').value;
+								let imgs = item.querySelectorAll('img');
+								let imgUrl = '';
+								if (imgs.length > 0){
+									imgs.forEach(function(img,index){
+										imgUrl += config.imageShow+'/'+img.id+".jpg,";
+									});	
+									imgUrl = imgUrl.trim(',');
+								}
+								let detailJson  = {
+									"scdguid":"",
+									"sccguid":sccguid,
+									"checkscore":checkScore,
+									"imgurl":imgUrl
+								};	
+								detailArray.push(detailJson);
+							});
+							let itemData = {
+								"scrguid":"",
+								"scpguid":"",
+								"busno":_this.carnum.value,
+								"remark": dom.querySelector('textarea').value,
+								"weather":_this.weatherElement.innerHTML,
+								"bustime":_this.timesElement.innerHTML,
+								"issubmit":optionType,   //0:保存，1:提交
+								"checkline" : _this.waysElement.innerHTML,
+								"pageFlag" : "1",
+								"checktype" : obj.checktype,
+								"planno" : "",
+								"detail":detailArray								
+							};
+							
+							saveContent.push(itemData);
+							console.log(saveContent.length);
+						}
+					});
+					mui.ajax({
+						url:config.TempCheckPlanOperation,
+						dataType:"json",	
+						type:"POST",
+						data:{
+							"saveContent":JSON.stringify(saveContent)
+						},
+						success:function(data){
+							plus.nativeUI.closeWaiting();
+							mui.alert(alertText,'',function(){
+								location.reload();
+								mui.back();								
+								if (optionType){ //提交,刷新已检记录
+									let showPage = plus.webview.getWebviewById('show.html');
+									mui.fire(showPage,"reload",{
+										
+									});																		
+								}else{  //保存,刷新待检计划
+									let PlanPage = plus.webview.getWebviewById('checkplan.html');	
+									mui.fire(PlanPage,"refreshData",{
+											
+									});									
+								}
+							});
+						},
+						error:function(xhr,type,errorThrown){
+							console.log(errorThrown);
+						}
+					});					
+				},
+				uploadImg : function (reslove) {   //上传图片,并将新的图片名作为img的ID写入dom中
+					plus.nativeUI.showWaiting('数据提交中');
+					let imgS = document.querySelectorAll('img');
+					if (imgS.length > 0){
+						let imgUploadKey = 1;
+						let imgFiles = [];	
+						imgS.forEach(function(img,index){
+							imgFiles.push({name : 'uploadkey'+imgUploadKey,path : img.src});
+							console.log(img.src);
+							imgUploadKey++;
+						});
+						
+						let task = plus.uploader.createUpload(
+							config.imageUpload,
+							{method:'post'},
+							function (t,status) {
+								if (status == 200){
+									console.log('图片上传成功');
+									console.log(t.responseText);
+									let imgs = t.responseText.split(',');
+									imgs.pop(); //删除最后一个空元素
+									imgs.forEach(function (value,index) {
+										let nameArr = value.split(".");
+										let newname = nameArr[2];
+										imgS[index].id = newname;  //将服务器传入的图片名称作为dom的ID,提交数据时通过遍历id拼凑提交地址
+									});
+									reslove('uploadImgSuccess');
+								}else{
+									console.log('图片上传失败');
+								}
+							}
+						);
+						task.addData("uid",this.getUid());
+						imgFiles.forEach(function(value,index){
+							task.addFile(value.path,{key:value.name});
+						});
+						task.start();						
+					}else{
+						reslove('noImg');
+					}
+				},
+				getUid : function(){
+					return Math.floor(Math.random()*100000000+10000000).toString();
+				}
+			};	
+			check.bindEventListener();	   //绑定所有事件
+			
+			//下拉刷新
+			function pulldownRefresh() {
+				check.requestCheckType().then(function(data){
+					check.setCheckType(data);
+					check.createItemObj();
+					return new Promise(function(resolve,reject){
+						check.itemArr[0].getCheckItem(resolve,reject);
+					});
+				})
+				.then(function(data){
+					check.itemArr[0].setCheckItem(data);
+					return new Promise(function(resolve,reject){
+						check.itemArr[1].getCheckItem(resolve,reject);
+					});					
+				})
+				.then(function(data){
+					check.itemArr[1].setCheckItem(data);
+					return new Promise(function(resolve,reject){
+						check.itemArr[2].getCheckItem(resolve,reject);
+					});					
+				})			
+				.then(function(data){
+					check.itemArr[2].setCheckItem(data);	
+					let temp = check.itemArr[1];
+					check.itemArr[1] = check.itemArr[2];					
+					check.itemArr[2] = temp;
+					check.printDom();						
+					check.addCameraListener();
+					check.addPicListener();
+				})
+				.catch( ex => {
+					if (ex === 'timeout'){					
+						check.timeout.style.display = 'block';
+						check.segementedEle.style.display = 'none';
+						check.cleanDom();
+					}
+				});				
+			}	
+			mui('.mui-scroll-wrapper').scroll({
+					 bounce: false //是否启用回弹
+				});
+			pulldownRefresh();
+			mui.plusReady(function(){
+				let self = plus.webview.currentWebview();				
+					optional = self.optional;
+					planno = self.planno;
+					lastPage = self.opener();
+					showPage = plus.webview.getWebviewById('show.html');
+					checkPlanPage = plus.webview.getWebviewById('checkplan.html');
+				let role = window.localStorage["role"];
+					schedule=plus.webview.getWebviewById(role);
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<script src="js/common.js"></script>
+	<link rel="stylesheet" href="css/mui.picker.min.css" />
+	<link rel="stylesheet" href="css/mui.poppicker.css" />
+	<link rel="stylesheet" href="css/mui.min.css">
+
+
+	<style>
+		body {
+			font-family: "微软雅黑";
+			-webkit-overflow-scrolling:auto;
+		}
+		/**标题栏背景色、高度设置**/
+
+		.show-head {
+			background-color: #6a7d8f;
+			height: 50px;
+		}
+		/**标题栏文字样式设置**/
+
+		.mui-tit {
+			text-align: center;
+			margin-top: 0.8em;
+			font-size: 1em;
+			font-weight: 400;
+		}
+		/**返回按钮、标题颜色设置**/
+
+		.myback,
+		.mui-tit {
+			color: #FAFAFA;
+			font-weight: bolder;
+		}
+		/**时间段选择区域**/
+
+		.timearea {
+			width: 100%;
+			height: 3.5em;
+			background-color: #81C6CD;
+			border: none;
+			padding: 25px 0 30px 5px;
+		}
+		/**三者显示为内联元素**/
+
+		#starttime,
+		#endtime,
+		#typePicker {
+			display: inline;
+			font-size: 15px;
+		}
+		/**时间选择器样式设置**/
+
+		#starttime,
+		#endtime,
+		#typePicker {
+			width: 32%;
+			margin-top: -10px;
+			height: 2.05em;
+			color: #000000;
+		}
+		
+		#pullrefresh{
+			top: 60px;
+			}
+		.timeout{
+			text-align: center;
+			margin: 10px;
+			display: none;
+		}
+		/*统计标题*/
+
+		.checkedlist {
+			margin-top: 20px;
+		}
+		
+		#checkedtitle{
+			box-shadow: 0 1px 2px rgba(0,0,0,.3);
+			border-radius: 2px 2px 0 0;
+			padding: 8px;
+			background-color: #FAFAFA;
+			margin: 10px 8px;
+		}
+
+		.checkedlist h4 {
+			text-align: center;
+		}
+		/*统计读取数据显示*/
+
+		.checkedlist h4 span {
+			color: #007AFF;
+		}
+
+		.checkedlist ul {
+			list-style-type: none;
+		}
+
+		.Linechecktimes {
+			float: right;
+			margin-right: 15%;
+		}
+
+		.LinesTotalTimes {
+			float: right;
+			margin-right: 5%;
+		}
+
+		.checkedLine {
+			float: left;
+			margin-left: 5%;
+		}
+		
+		.msgtit{
+			padding:5px 10px 10px 10px;
+		}
+
+		.checkedLine,
+		.LinesTotalTimes {
+			padding: 10px;
+			font-size: 18px;
+			font-weight: 600;
+			color: #0062CC;
+		}
+
+		.mui-badge{
+			font-size: 17px;
+			margin-top: 18px;
+		}
+		
+		/*底部结束分割线*/
+		.endborder {
+			padding-top: 1px;
+		}
+
+		.endborder hr {
+			border-top: 1px solid #AAAAAA;
+		}
+		/*底部结束分割线文字*/
+
+		.hrtext {
+			position: relative;
+			width: 75px;
+			background-color: #EFEFF4;
+			left: 40%;
+			text-align: center;
+			top: -20px;
+			padding: 0 2%;
+			font-size: 15px;
+			color: #AAAAAA;
+		}
+	</style>
+</head>
+
+<body>
+	<header class="timearea">
+		<form>
+			<button id="starttime" name="starttime" class="bustime btn mui-btn"></button>
+			<button id="endtime" name="endtime" class="bustime btn mui-btn"></button>
+			<button id='typePicker' class='typePicker' type='button'>全部</button>
+			<div id='typeResult' class="ui-alert"></div>
+		</form>
+	</header>
+
+	<section id="pullrefresh">
+		<div id="loading" class="loading" style='width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center'>
+			<font style='font-size:20px'>正在加载...</font>
+		</div>
+	</section>
+
+
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+	<script type="text/javascript" src="js/mui.picker.min.js"></script>
+	<script type="text/javascript">
+
+		
+		function ShowProcess(){
+			this.year = null;
+			this.month = null;
+			this.start = null;
+			this.end = null;
+			this.backButtonPress = 0; 
+			this.istempVal = null;
+		}
+			
+			mui.init({
+
+			});
+		
+		///**获取当月**/
+		ShowProcess.prototype.getStarttime=function(){
+			let myDate = new Date();
+			let starttime = document.querySelector('#starttime');
+			let endtime = document.querySelector('#endtime');
+			this.year = myDate.getFullYear();
+			this.month = myDate.getMonth() + 1;
+				if(this.month  <= 9){  
+           				this.month  = "0" + this.month ;  
+				}  
+			StartTime = this.year + '-' + this.month ;
+			EndTime = this.year + '-' + this.month ;
+			starttime.innerHTML = StartTime;
+			endtime.innerHTML = EndTime;
+		}
+		
+		//判断时间合法性
+		ShowProcess.prototype.CheckEndTime=function(){
+			let starttime = document.querySelector("#starttime").innerHTML;
+			this.start = starttime.replace(/-/g, ""); //清除函数时间格式的"-",用于后面的纯数字比较
+//				console.log(this.start);
+			let endtime = document.querySelector("#endtime").innerHTML;
+			this.end = endtime.replace(/-/g, "");
+//				console.log(this.end);
+				if (this.start > this.end) {
+					mui.alert('开始时间不能大于结束时间');
+				window.location.reload(); //时间输入不合法时，刷新
+			}
+		}
+		
+		//状态栏样式设置
+      	ShowProcess.prototype.setNavigatorStyle = function () {
+      		plus.navigator.setStatusBarBackground("#6a7d8f");	
+			plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );
+      	}
+		
+		mui.plusReady(function(){
+			let process = new ShowProcess();
+			process.getStarttime(); 
+			process.bindBackEvent(); 
+			process.setNavigatorStyle(); 
+			process.queryDataByCondition(); 
+      	});
+
+
+		/**起止时间选择器**/
+		mui('.timearea').on('tap', '#starttime', function () {
+			let dtPicker = new mui.DtPicker({
+				"type": "month",
+			});
+			dtPicker.show(function (st) {
+				let starttime = document.querySelector('#starttime');
+				let beforeStr = starttime.innerHTML;
+				starttime.innerHTML = st.value;
+				console.log("starttime"+starttime.innerHTML)
+				starttime.style.color = '#000000';
+				if (beforeStr != st.value) {
+					let process = new ShowProcess();
+						process.CheckEndTime(); 
+							$(".checkedlist").remove();
+							$("#loading")[0].style.display = 'block';
+						process.queryDataByCondition(); //时间更改后ajax数据的更改
+				}
+			});
+		})
+
+		mui('.timearea').on('tap', '#endtime', function () {
+			let dtPicker = new mui.DtPicker({
+				"type": "month",
+			});
+			dtPicker.show(function (en) {
+				let endtime = document.querySelector('#endtime');
+				let beforeEnd = endtime.innerHTML;
+				endtime.innerHTML = en.value;
+				console.log("endtime"+endtime.innerHTML);
+				endtime.style.color = '#000000';
+				if (beforeEnd != en.value) {
+					let process = new ShowProcess();
+						process.CheckEndTime();
+							$(".checkedlist").remove();
+							$("#loading")[0].style.display = 'block';
+						process.queryDataByCondition();//时间更改后ajax数据的更改
+				}
+			});
+		})
+
+		/**巡检类型选择器**/
+		let typePicker = new mui.PopPicker();
+		picker_checktype();
+
+		function picker_checktype() {
+			typePicker.setData([{
+				value: "",
+				text: "全部"
+			}, {
+				value: "1",
+				text: "临时巡检"
+			}, {
+				value: "0",
+				text: "计划巡检"
+			}]);
+		}
+		mui('.timearea').on('tap', '#typePicker', function () {
+			typePicker.show(function (items) {
+				let typePicker = document.querySelector('#typePicker');
+				let beforetype = typePicker.innerHTML;
+				typePicker.innerHTML = items[0].text;
+//				console.log(typePicker.innerHTML);
+				typePicker.innerHTML = items[0].text;
+				typePicker.style.color = '#000000';
+				if (beforetype != items[0].text) {
+//				console.log(items[0].value)
+					$(".checkedlist").remove();
+					$(".nonecheck").remove();
+					$("#loading")[0].style.display = 'block';
+					let process = new ShowProcess();
+						process.queryDataByCondition();
+				}
+			});
+		});
+
+		/**跳转到具体线路已检查信息(已匹配参数信息)**/
+		ShowProcess.prototype.jumpmsg = function (obj) {
+//		function jumpmsg(obj) {
+			let checkline = $(obj).find('.checkedLine').html();
+			let starttimeVal = $('#starttime').html();
+			let endtimeVal = $('#endtime').html();
+			let istempHtml = $('#typePicker').html();
+
+			if (istempHtml === "临时巡检") {
+				this.istempVal = 1;
+			} else if (istempHtml === "计划巡检") {
+				this.istempVal = 0;
+			} else {
+				this.istempVal = "";
+			}
+
+			let webview = mui.openWindow({
+				url: 'checkmsglist.html',
+				show: {
+					autoShow: true
+				},
+				extras: {
+					checkline: checkline,
+					starttime: starttimeVal,
+					endtime: endtimeVal,
+					istemp: this.istempVal,
+				},
+			});
+		
+//				console.log(webview.checkline);
+//				console.log(webview.starttime);
+//				console.log(webview.endtime);
+//				console.log(webview.istemp);
+		}
+		/**根据条件查询列表数据 **/
+		ShowProcess.prototype.queryDataByCondition = function () {
+			let _this = this;
+			starttimeVal = $('#starttime').html();
+			endtimeVal = $('#endtime').html();
+			istempHtml = $('#typePicker').html();
+			if (istempHtml === "临时巡检") {
+				this.istempVal = 1;
+			} else if (istempHtml === "计划巡检") {
+				this.istempVal = 0;
+			} else {
+				this.istempVal = "";
+			}
+//			console.log(this.istempVal);
+
+			$.ajax({
+				url: config.getCheckedPlan, //查询检查计划列表
+				dataType: "json",
+				type: "GET",
+				timeout:8000,
+				async: true,
+				cache: false,
+				data: {
+					"starttime":starttimeVal,
+					"endtime": endtimeVal,
+					"istemp": this.istempVal
+				},
+				success: function (data) {
+//				alert(data.jsonData)
+					$("#loading")[0].style.display = 'none';
+					let list = data.jsonData;
+					if (list.length != 0) {
+						let totaltit = "";
+						totaltit +=
+							"<div class='checkedlist' id='checkedtitle'><h4>已检线路共 <span id='sumcarlines'></span> 条  ▪ 已完成共 <span id='sumcartimes'></span> 车次</h4><div>";
+						$("section").append(totaltit);
+						
+						/*
+						 * 输出线路名同名时，进行合并处理
+						 */
+						for (let i = 0; i < list.length; i++) {
+							for (let j = i+1 ; j < list.length; j++) {
+								if (list[i].checkline === list[j].checkline) {
+									list[i].completenum = parseInt(list[i].completenum) + parseInt(list[j].completenum);
+									list.splice(j, 1);
+									j--;
+								}
+							}
+						}
+						
+						
+						let totalLines = list.length; //总线路
+						let totalTimes = 0; //总车次
+						window.process = new ShowProcess();
+						
+						for (let i = 0; i < list.length; i++) {
+							let lct = "";
+							lct += "<div class='checkedlist'>";
+//								lct += "<input type='hidden' name='planno' value='"+list[i].planno+"'>";
+							lct += "<div onclick='process.jumpmsg(this)'>"
+							lct += "<div class='mui-card' id='jumpmsg'>";
+							lct += "<div class='mui-card-content' style='display:inline'>";
+							lct += "<div class='msgtit'>"
+							lct += "<span class='checkedLine mui-icon mui-icon-flag'>" + list[i].checkline + "</span>";
+							lct += "<span class='LinesTotalTimes mui-icon mui-icon-checkmarkempty'> 完成车次：" + list[i].completenum +"</span>";
+							lct += "</div></div></div>";
+							lct += "<div class='mui-card' style='margin-top:-9px' >";
+							lct += "<div class='mui-card-content'>";
+							
+							let checkline = list[i].checkline; //上一个ajax的返回值为checkline
+							mui.ajax({
+								url: config.getCheckRecordByline,
+								dataType: "json",
+								type: "GET",
+								async: false,
+								cache: false,
+								timeout : 8000,
+								data: {
+									"checkline": checkline,
+									"starttime": starttimeVal,
+									"endtime": endtimeVal,
+									"istemp": this.istempVal
+								},
+								success: function (data) {
+//									console.log(checkline);
+									let list = data.jsonData;
+									if (list.length != 0) {
+											let orderArr1 =new Array()
+											let orderArr2 =new Array()
+											let orderArr3 =new Array()
+											let orderArr4 =new Array()
+										for (let i = 0; i < list.length; i++) {
+											let typename = list[i].TYPENAME;
+											if(typename === "车辆整洁"){
+												orderArr1[0]=list[i];
+											}
+											if(typename === "车内服务设施"){
+												orderArr2[0]=list[i];
+											}
+											if(typename === "车厢服务"){
+												orderArr3[0]=list[i];
+											}
+											if(typename === "乘客满意度"){
+												orderArr4[0]=list[i];
+											}
+										}
+										
+											lct += "<div class='checktype'>";
+												lct += "<div class='typebox'>";
+												for(let k=0;k<orderArr1.length;k++){
+												lct += "<ul><li class='datalist'><span class='typecheck'>" +orderArr1[k].TYPENAME + "</span>"
+												lct += "<span class='typedata' style='float:right;margin-right:10%'>"
+												lct += "完成车次：" + orderArr1[k].COMPLETENUM + "</span></li></ul>";
+											}
+												for(let k=0;k<orderArr2.length;k++){
+												lct += "<ul><li class='datalist'><span class='typecheck'>" +orderArr2[k].TYPENAME + "</span>"
+												lct += "<span class='typedata' style='float:right;margin-right:10%'>"
+												lct += "完成车次：" + orderArr2[k].COMPLETENUM + "</span></li></ul>";
+											}
+												for(let k=0;k<orderArr3.length;k++){
+												lct += "<ul><li class='datalist'><span class='typecheck'>" +orderArr3[k].TYPENAME + "</span>"
+												lct += "<span class='typedata' style='float:right;margin-right:10%'>"
+												lct += "完成车次：" + orderArr3[k].COMPLETENUM + "</span></li></ul>";
+											}
+												for(let k=0;k<orderArr4.length;k++){
+												lct += "<ul><li class='datalist'><span class='typecheck'>" +orderArr4[k].TYPENAME + "</span>"
+												lct += "<span class='typedata' style='float:right;margin-right:10%'>"
+												lct += "完成车次：" + orderArr4[k].COMPLETENUM + "</span></li></ul>";
+											}
+												lct += "</div>"
+									}
+								}
+							});
+							//											
+							lct += "</div></div></div></div>"
+							$("section").append(lct);
+							totalTimes += parseInt(list[i].completenum.toString()); //转换为int类型
+						}
+						$("section").append("<div class='endborder checkedlist'><hr><div class='hrtext'>到底啦</div></div>"); //底线
+						//console.log(totalTimes);
+						//赋值
+						$('#sumcarlines').text(totalLines);
+						$('#sumcartimes').text(totalTimes);
+					} else {
+						let str = "";
+						str += "<div style='width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center' class='checkedlist'>"
+						str += "<div style='font-size:20px' class='checkedlist'>暂无已检记录</div>";
+						str += "</div>";
+						$("section").append(str);
+					}
+				},
+				error : function(data){
+					console.log("网络超时");
+				}
+			});
+		}
+
+
+
+		   ShowProcess.prototype.bindBackEvent = function () { 
+      		let _this = this;
+	 		mui.back = function(event) {
+				_this.backButtonPress++;
+				if (_this.backButtonPress > 1) {
+					plus.runtime.quit();
+				} else {
+					plus.nativeUI.toast('再按一次退出应用');
+				}
+				setTimeout(function() {
+					_this.backButtonPress = 0;
+				}, 1000);
+				return false;
+			};     		
+      }
+
+		//监听刷新本页面
+			window.addEventListener('reloadData', function (event) {
+					location.reload();
+				});
+	</script>
+</body>
+
+</html>

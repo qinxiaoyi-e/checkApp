@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/mui.preview.css"/>		
+		<script type="text/javascript" src="js/common.js" ></script>
+		<style type="text/css">
+		/**返回按钮、标题颜色设置**/
+		.myback,.mui-tit{
+			color: #FAFAFA;
+			font-weight: bolder;
+		}	
+		/**标题栏背景色、高度设置**/
+		.detail-head {
+			background-color: #6a7d8f;
+			height: 50px;
+		}
+		/**标题栏文字样式设置**/
+		.mui-tit{
+			text-align: center;
+			margin-top: 1em;
+			font-size: 1em;
+			font-weight: 500;
+		}
+		.detail-content{
+			margin-top: 49px;
+			width: 100%;
+			height: 16vh;
+			background-color: #81C6CD;
+			/*text-align: center;*/
+			padding: 10px 10px;
+		}
+		.detail-content div{
+			height: 5vh;
+			line-height: 3vh;
+			margin-bottom: 2vh;
+			width: 49%;
+		}				
+		.mui-content{
+			padding: 0 !important;
+		}
+		.mui-content-padded{
+			margin: 0;
+		}
+		.mui-control-item{
+			background-color: white;
+		}
+		.mui-segmented-control {
+			border-radius: 0px;
+			font-size: 13px;
+		}	
+		.mui-control-content{
+			margin-bottom: 10px;
+		}
+		.mui-control-content img{
+			width: 50px;
+			height: 50px;
+			margin: 10px;
+			border-radius: 5px;
+		}					
+		.title{
+			text-indent: 1em;
+		}
+		.detail>div{
+			margin-top: 10px;
+			padding-left: 10px;
+		}
+		.score{
+			margin: 8px;
+		}
+		.showlist>li>span{
+			font-size: 14px;
+		}
+		</style>
+	</head>
+
+	<body>
+		<header class="detail-head mui-bar mui-bar-nav">
+			<a class="myback mui-icon mui-icon-left-nav mui-pull-left mui-action-back"></a>
+			<h1 class="mui-tit">巡检记录</h1>
+		</header>
+		<div class="detail-content">
+			<div class="mui-btn" class="route">线路：<span id="route"></span></div>
+			<div class="mui-btn" class="carnum">车牌号：<span id="carnum"></span></div>
+			<div class="mui-btn"><span id="getin"></span></div>
+			<div class="mui-btn">天气：<span id="weather"></span></div>					
+		</div>
+		<div class="mui-content">
+			<div class="mui-content-padded">
+				<div class="mui-segmented-control">
+
+				</div>
+			</div>
+		</div>		
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+		<script type="text/javascript" src="js/mui.zoom.js" ></script>		
+		<script type="text/javascript" src="js/mui.previewimage.js" ></script>				
+		<script type="text/javascript">
+			mui.init({
+				swipeBack:true,
+			});
+			mui.previewImage();
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				var carNum = self.carnums;
+				var subTime = self.subtimes;
+				var ways = self.ways;
+				$('#carnum').html(carNum);
+				$('#getin').html(subTime);
+				$('#route').html(ways);
+				console.log(carNum);
+				console.log(subTime);
+				$.ajax({
+					url:config.getCheckedDetail,
+					dataType:"json",
+					type:"GET",
+					async:false,
+					crossDomain:true,
+					data:{
+						'busno' : carNum,
+						'checktime' : subTime
+					},
+					success:function(data){
+						var recordData = data.jsonData;	
+						var checkTypeArr = []
+						$('#weather').html(recordData[0].WEATHER);
+						console.log(recordData.length);
+						for(var i = 0 ; i < recordData.length ; i++){
+							if($.inArray(recordData[i].CHECKTYPE,checkTypeArr)<0){
+								checkTypeArr.push(recordData[i].CHECKTYPE);
+							}
+						}
+						$.ajax({
+							url:config.getAllCheckType,
+							dataType:"json",
+							type:"GET",
+							async:false,
+							crossDomain:true,	
+							success:function(data){
+								var checkData = data.jsonData;
+								var innerTextA = '';
+								var innerTextB = '';
+								for(var k = 0 ; k < checkData.length ; k++){
+									if($.inArray(checkData[k].codeId,checkTypeArr)>-1){
+										innerTextA += '<a class="mui-control-item" href="#item'+checkData[k].codeSeq+'" id="'+checkData[k].codeId+'">'+checkData[k].valueName+'</a>';
+										innerTextB += '<div id="item'+checkData[k].codeSeq+'" name="'+checkData[k].codeId+'" class="mui-control-content"></div>';
+										console.log(checkData[k].codeId);
+									}
+								}
+								$('.mui-segmented-control').append(innerTextA);
+								$('.mui-content').append(innerTextB);
+								$('.mui-segmented-control').find('a').first().addClass('mui-active');
+								$('.mui-content').find('.mui-control-content').first().addClass('mui-active');
+								
+								var manyiId = '0000000000000000SYCODE16040732834857';
+								for(var i = 0 ; i < recordData.length; i++){
+									console.log(recordData[i].ITEMNAME);
+									var inner = '';
+									inner+='<div>';
+										inner+='<ul class="mui-table-view mui-table-view-radio showlist">';
+										    if(recordData[i].CHECKSCORE == 10 && recordData[i].CHECKTYPE == manyiId){
+										    	inner+='<li class="mui-table-view-cell">';
+												inner+=recordData[i].ITEMNAME+'<span class="mui-badge mui-badge-purple">优秀</span>';
+												inner+='</li>';
+										    }
+										    else if(recordData[i].CHECKSCORE == 8){
+												inner+='<li class="mui-table-view-cell">';
+												inner+=recordData[i].ITEMNAME+'<span class="mui-badge mui-badge-yellow">良好</span>';
+												inner+='</li>';											    	
+										    }
+										    else if((recordData[i].CHECKSCORE == 10 && recordData[i].CHECKTYPE != manyiId) || recordData[i].CHECKSCORE == 5 || recordData[i].CHECKSCORE == 6 || recordData[i].CHECKSCORE == 15){
+												inner+='<li class="mui-table-view-cell">';
+												inner+=recordData[i].ITEMNAME+'<span class="mui-badge mui-badge-primary">合格</span>';
+												inner+='</li>';										    	
+										    }
+											else if(recordData[i].CHECKSCORE == 0){
+												inner+='<li class="mui-table-view-cell">';
+												inner+=recordData[i].ITEMNAME+'<span class="mui-badge mui-badge-red">不合格</span>';
+												inner+='</li>';										    	
+											}										
+											inner+='</ul>';
+											if(recordData[i].IMGURL!=null){ //判断记录中有无图片
+												console.log('有图片');
+													var arrays = recordData[i].IMGURL.split(",");
+													for(var j = 0 ; j<arrays.length ; j++){
+														if(arrays[j] != ''){
+															inner+='<img src="'+arrays[j]+'" data-preview-src="" data-preview-group="1" />';															
+														}
+													}	
+											}											
+										inner+='</div>';
+									$('.mui-content').find('[name="'+recordData[i].CHECKTYPE+'"]').append(inner);	
+								}
+								if(recordData[0].RREMARK != null){
+									var textA = '<div class="mui-input-row" style="margin: 10px 5px;"><textarea id="textarea" rows="5" disabled="disabled" placeholder="巡检备注(选填)">巡检备注：'+recordData[0].RREMARK+'</textarea></div>';
+									$('.mui-content').find('[name="'+recordData[0].CHECKTYPE+'"]').append(textA);									
+								}
+							}						
+						});			
+					},
+					error:function(xhr,type,errorThrown){
+						console.log(errorThrown);
+					}
+				});				
+			});
+		</script>
+	</body>
+
+</html>

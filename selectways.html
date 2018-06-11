@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script type="text/javascript" src="js/common.js" ></script>
+		<style>
+			html,
+			body {
+				height: 100%;
+				overflow: hidden;
+				font-family: "微软雅黑";
+			}
+			/*
+			 * 开始:顶部bar
+			 */
+			header {
+				background-color: #6A7D8F !important;
+				color: #FAFAFA;
+				margin-bottom: 0;
+			}
+			
+			h1 {
+				color: #FAFAFA !important;
+			}			
+			header,
+			h1 {
+				height: 50px !important;
+				line-height: 50px !important;
+			}
+			/*
+			 * 结束：顶部bar
+			 */			
+			.mui-bar {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			.mui-content{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+			}
+			.mui-scroll{
+				margin-top: -14px;
+			}
+			#search{
+				height: 50px;
+			}
+			.mui-search .mui-placeholder{
+				height: 50px;
+				line-height: 50px;
+			}	
+			.mui-input-row.mui-search .mui-icon-clear{
+				top: 15px !important;
+			}				
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<span class="mui-icon mui-icon-arrowleft mui-action-back"></span>
+			<h1 class="mui-title">线路选择</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-input-row mui-search">
+			    <input type="search" id="search" class="mui-input" placeholder="点击搜索线路">
+			</div>
+			<div class="mui-scroll">
+				<ul class="mui-table-view" id="list">
+	
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>		
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init({
+				swipeBack:true,
+			});
+			
+			var Routes = []; //存放线路的数组
+			var lastPage = null;
+			mui.plusReady(function() {
+				plus.navigator.setStatusBarBackground("#6a7d8f");	
+				plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );
+				lastPage = plus.webview.currentWebview().opener();
+				mui.ajax({
+					url:config.getAllBusLine,
+					dataType:"json",
+					type:"GET",	
+					success:function(data){
+						for(var i = 0 ; i < data.jsonData.length ; i++){
+							Routes.push(data.jsonData[i].lname);
+							$('#list').append('<li class="mui-table-view-cell">'+Routes[i]+'</li>');
+						}					
+					},
+					error : function (xhr,type,errorThrown) {
+						console.log(type);
+						console.log(xhr);
+						console.log(errorThrown);
+					}
+				});
+			});
+			document.getElementById("search").addEventListener('input',function(){
+					$('#list').empty();
+					var linename = this.value;
+					for(var i = 0 ; i < Routes.length ; i++){
+						if(Routes[i].indexOf(linename) > -1){
+							$('#list').append('<li class="mui-table-view-cell">'+Routes[i]+'</li>');
+						}
+					}
+			});	
+			mui('#list').on('tap','li',function(){
+				var line = this.innerHTML
+				mui.fire(lastPage,'changeLine',{
+					line : line
+				});
+				mui.back();
+			});
+
+		</script>
+	</body>
+
+</html>

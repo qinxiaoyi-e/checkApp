@@ -1,0 +1,157 @@
+{
+	"car.html": {
+		"href": "car.html",
+		"resources": [
+			"js/mui.min.js",
+			"js/jquery-1.7.1.js",
+			"css/mui.min.css",
+			"images/541660.gif",
+			"images/541659.gif",
+			"images/541657.gif",
+			"images/541666.gif",
+			"check.html",
+			"images/camera.png",
+			"js/mui.js",
+			"checklist2.html",
+			"js/mui.picker.min.js",
+			"fonts/mui.ttf",
+			"css/mui.picker.min.css"
+		],
+		"refer": [
+			"check.html",
+			"checklist2.html"
+		],
+		"priority": 0
+	},
+	"check.html": {
+		"href": "check.html",
+		"resources": [
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"js/jquery-1.7.1.js",
+			"car.html",
+			"checklist.html",
+			"fonts/mui.ttf"
+		],
+		"refer": [
+			"car.html",
+			"checklist.html",
+			"select.html"
+		],
+		"priority": 0
+	},
+	"index.html": {
+		"href": "index.html",
+		"resources": [
+			"js/mui.min.js",
+			"js/jquery-1.7.1.js",
+			"css/mui.min.css",
+			"js/common.js",
+			"check.html",
+			"fonts/mui.ttf",
+			"js/mui.js"
+		],
+		"refer": [
+			"check.html",
+			"select.html",
+			"home.html"
+		],
+		"priority": 0
+	},
+	"checklist.html": {
+		"resources": [
+			"checklist2.html",
+			"check.html",
+			"fonts/mui.ttf"
+		],
+		"refer": [
+			"checklist2.html",
+			"check.html",
+			"checkwithplan.html"
+		]
+	},
+	"checklist2.html": {
+		"resources": [
+			"car.html",
+			"checklist.html"
+		],
+		"refer": [
+			"car.html",
+			"checklist.html"
+		]
+	},
+	"select.html": {
+		"refer": [
+			"check.html",
+			"show.html",
+			"addtemp.html"
+		],
+		"resources": []
+	},
+	"show.html": {
+		"resources": [
+			"fonts/mui.ttf"
+		],
+		"refer": [
+			"checkmsglist.html",
+			"show.html"
+		]
+	},
+	"addtemp.html": {
+		"resources": [
+			"js/mui.picker.min.js",
+			"css/mui.picker.min.css"
+		],
+		"refer": []
+	},
+	"home.html": {
+		"resources": [
+			"mainpage.html"
+		],
+		"refer": [
+			"mainpage.html",
+			"show.html",
+			"checkplan.html",
+			"schedule_super.html"
+		]
+	},
+	"mainpage.html": {
+		"refer": [
+			"tempInspection.html"
+		],
+		"resources": []
+	},
+	"tempInspection.html": {
+		"refer": [
+			"selectways.html",
+			"album.html"
+		],
+		"resources": [
+			"js/mui.js"
+		]
+	},
+	"checkmsglist.html": {
+		"refer": [
+			"showdetail.html"
+		],
+		"resources": []
+	},
+	"checkplan.html": {
+		"refer": [
+			"checklist.html"
+		],
+		"resources": [
+			"js/mui.js"
+		]
+	},
+	"schedule_super.html": {
+		"refer": [
+			"schedule_super.html"
+		]
+	},
+	"checkwithplan.html": {
+		"refer": [
+			"album.html"
+		]
+	}
+}

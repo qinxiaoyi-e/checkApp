@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/mui.picker.min.css" />
+<!--    <link rel="stylesheet" href="css/app.css" />-->
+</head>
+	<style>
+		body{
+			font-family: "微软雅黑";
+		}
+		
+		/**小屏字体设置**/
+		@media(max-width:320px){
+		.monthdone tr{
+			font-size: 0.85em;
+			}
+		}
+		
+		/**返回按钮、标题颜色设置**/
+		.myback,.mui-tit{
+			color: #FAFAFA;
+		}
+		/**标题栏背景色、高度设置**/
+		.schedule-head{
+			background-color: #6a7d8f;
+			height: 50px;
+		}
+		/**标题栏文字样式设置**/
+		.mui-tit{
+			margin-top: 0.9em;
+			text-align: center;
+			font-size: 1em;
+			font-weight: 400;
+		}
+		/**选择框后背景色、高度设置**/
+		.hisscreen{
+			/*margin-top: 5px;*/
+			height: 3.5em;
+			background-color: #81C6CD;
+			border: none;
+			}
+			
+		/**选择框边距设置**/
+		.sel{
+			padding: 15px 0 5px 5px;
+		}
+		
+		/**年月线路选择器设置**/
+		.histimesel,.hislinesel{
+			width: 49%;
+			height: 2em;
+			font-size: 0.9em;
+			display: inline-block;
+		}
+		
+		#timeoutarea{
+			width: 100%;
+			position: absolute;
+			top: 30px;
+			bottom: 0px;
+			left: 0px;
+			top: 210px;
+		}
+		#timeoutarea .timeout{
+			font-size: 16px;
+			text-align: center;
+			margin: 10px;
+			display: none;
+		}
+		.mui-badge{
+			font-size: 17px;
+			margin-top: 18px;
+		}
+		/**已完成计划模块样式设置**/
+		.monthdone{
+			background-color: #FFFFFF;
+			box-shadow: 0 1px 2px rgba(0,0,0,.3);
+			border-radius: 2px 2px 0 0;
+			padding:1px 10px 10px 10px;
+			margin: 20px 10px;
+		}
+		/**表格样式设置**/
+		.monthdone table{
+			width: 100%;
+			border-bottom: solid 1px #F2F2F2;
+			text-align: center;
+			margin-bottom: 15px;
+		}
+		/**表格大标题样式设置**/
+		.monthdone h4{
+			border-bottom: solid 1px #F2F2F2;
+			padding: 10px;
+			font-size: 1.2em;
+		}
+		/**表格横向列表样式设置**/
+		.monthdone th,.monthdone td{
+			border-bottom:  solid 1px #F2F2F2;
+			padding: 18px 5px;
+		}
+		/**表格纵向列表样式设置**/
+		.monthdone tr{
+			margin-left: 5px;
+		}
+		/**三纵列宽度分配**/
+		#tb1{
+			width: 35%;
+		}
+		#tb2{
+			width:43%;
+		}
+		#tb3{
+			width: 20%;
+		}
+		/**检查项纵列往左设置**/
+		.colfir{
+			text-align: left;
+		}
+		
+		/**进度条盒子样式**/
+		.progress-out {
+		    position: relative;
+		    border: 1px solid #13C2B6;
+		    background-color: #fff;
+		}
+		
+		/**进度条“进度”样式**/
+		.progress-in {
+		    position: absolute;
+		    height: 100%;
+		    width: 0%;
+		    border: none;
+		    background-color: #13C2B6;
+		    background-image: linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -webkit-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -moz-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -o-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -ms-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    text-align: center;
+		    color: #fff;
+		    z-index: 1;
+	}
+		/**进度条数字样式**/
+		.percent-show {
+		    position: absolute;
+		    width: 100%;
+		    height: 100%;
+		    top: 0;
+		    left: 0;
+		    color: #000;
+		    text-align: center;
+		    z-index: 2;
+	}
+		
+	</style>
+	<body>
+		<section class="schedule-section mui-content">
+			<div class="hisscreen">
+				<div class="sel">
+					<form>			
+					<button id="histime" name="histime" class="bustime btn mui-btn histimesel" ></button>
+					<button id="hisline" name="hisline" class=" btn mui-btn hislinesel" type='button' >全部</button>
+					</form>
+				</div>
+			</div>
+		<div id="text">
+		</div>
+		<div class='monthdone'>
+			<h4><span class='mui-icon mui-icon-checkmarkempty'></span><span id="seltypetext"></span>本月计划进度表</h4>
+				<div id="loading" style='width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center'>
+					<font style='font-size:20px'>正在加载...</font>
+				</div> 
+		</div>
+		
+		<div id="timeoutarea">
+			<div class="mui-scroll">
+			<div class="timeout">
+				<div class="mui-badge mui-badge-warning">
+					请求超时,请点击屏幕进行数据刷新
+				</div>
+			</div>
+			</div>
+		</div>
+		</section>
+		
+		<script type="text/javascript" src="js/mui.min.js" ></script>
+		<script type="text/javascript" src="js/mui.picker.min.js" ></script>
+		<script type="text/javascript" src="js/mui.poppicker.js" ></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+		<script type="text/javascript" src="js/Progress_schdl.js" ></script>
+		<script src="js/common.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		let homepage = null;
+		function SchPersProcess(){
+			this.year = null;
+			this.month = null;
+		}
+		
+		SchPersProcess.prototype.setNavigatorStyle = function () {
+      		plus.navigator.setStatusBarBackground("#6a7d8f");	
+			plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );
+      	}
+		mui.plusReady(function(){
+			let process = new SchPersProcess();
+				process.getMonthtime();
+				process.setNavigatorStyle();
+				process.getRoutesByTime();
+				process.queryDataByCondition_Sch();
+				
+			homepage = plus.webview.getWebviewById('homePage');
+			//滑屏切换
+				ws=plus.webview.currentWebview();
+				wn=plus.webview.getWebviewById('show.html');
+				// 左滑显示新窗口
+				ws.drag({direction:'left',moveMode:'followFinger'}, {view:wn,moveMode:'follow'}, function(e){
+					let curr = plus.webview.currentWebview();
+					if(e.result === true){
+						mui.fire(homepage,'changeView',{
+					        item : 2,
+					        direction : 'left',
+					        itemName:ws.id
+					    });						
+					}			
+				});
+				// 右滑隐藏新窗口
+				wn.drag({direction:'right',moveMode:'followFinger'}, {view:ws,moveMode:'follow'}, function(e){
+					if(e.result === true){
+						mui.fire(homepage,'changeView',{
+					        item : 3,
+					        direction : 'right',
+					        itemName:wn.id
+					    });						
+					}			
+				});			
+		})
+		 
+		 /**时间选择器**/
+		mui('.hisscreen').on('tap','#histime',function(){
+			let dtPicker = new mui.DtPicker({
+				"type": "month",
+			});
+			dtPicker.show(function(his) {
+				let histimeBtn= document.querySelector('#histime');
+				let beforeHis = histime.innerHTML;
+				histimeBtn.innerHTML = his.value;
+					console.log(histime.innerHTML)
+				histimeBtn.style.color = '#000000';
+					if(beforeHis!=his.value){
+						console.log('已经更改时间');
+						$(".datalist").remove();
+						$(".withoutmsg").remove();
+						$("#loading")[0].style.display = 'block';
+						let process = new SchPersProcess();
+							process.getRoutesByTime();
+							process.queryDataByCondition_Sch();
+						}
+					});					
+				})
+			
+//		/**线路选择器**/
+		mui('.hisscreen').on('tap','#hisline',function(){
+			hislinePicker.show(function(items) {
+				let hislinePicker = document.querySelector('#hisline');
+				let beforehisline = hislinePicker.innerHTML;
+					hislinePicker.innerHTML = items[0].text;
+//						console.log(typePicker.innerHTML);
+					hislinePicker.innerHTML = items[0].text;
+					hislinePicker.style.color = '#000000';
+						if(beforehisline != items[0].text){
+						console.log('已更换线路')
+						$(".datalist").remove();
+						$(".withoutmsg").remove();
+						$("#loading")[0].style.display = 'block';
+						let process = new SchPersProcess();
+							process.queryDataByCondition_Sch();
+						}
+					});				
+				});
+				
+
+		/** 获取系统当前月份**/
+		SchPersProcess.prototype.getMonthtime = function () {
+//		function getMonthtime(){
+			let myDate = new Date();
+			let histime = document.querySelector('#histime');
+				this.year = myDate.getFullYear();
+				this.month = myDate.getMonth() + 1;
+				if(this.month <= 9){  
+           			this.month = "0" + this.month;  
+				}  
+				MonthTime = this.year+'-'+this.month;
+//					console.log(MonthTime);
+				histime.innerHTML=MonthTime;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+		}; 
+			
+		let hislinePicker = new mui.PopPicker();
+		SchPersProcess.prototype.getRoutesByTime = function () {
+//		function getRoutesByTime(){
+			let histimeVal = $('#histime').html();
+			$.ajax({
+				type:"put",
+				url:config.getLinesByTime,
+				async:false,
+				data:{
+					"time":histimeVal,
+					"deptid":1
+				},
+				success:function(data){
+					let routes = data.jsonData;
+					let route_Arr = new Array();
+					let all = {
+						value:"",
+						text:"全部"
+					}
+				route_Arr.push(all);
+					if(routes.length > 0){
+					for(let i = 0 ; i < routes.length; i++){
+						let data = {
+							value : routes[i].CHECKLINE,
+							text : routes[i].CHECKLINE
+						}
+							route_Arr.push(data);
+					}							
+				}
+					hislinePicker.setData(route_Arr);
+				}
+			})
+		}
+			
+			
+		SchPersProcess.prototype.queryDataByCondition_Sch = function () {
+//		function queryDataByCondition_Sch(){
+			$(document).ready(function() {
+				myProgress();
+			})
+		let histimeVal = $('#histime').html();
+		let hislineVal = $('#hisline').html();
+			if(hislineVal === '全部')
+				{hislineVal = "";}		
+//			console.log(histimeVal)
+
+		$.ajax({
+			url:config.getRoutesByCheckType,
+			dataType:"json",	
+			type:"GET",
+			async:false,
+			data:{
+				"time":histimeVal,
+				"checkline":hislineVal,
+				"deptid":1,//此界面仅个人可见
+			},
+			success:function(data){
+//			alert(data.jsonData)
+			$("#loading")[0].style.display = 'none';
+			$(".monthdone")[0].style.display = 'block';
+			let list=data.jsonData;
+			if(list.length!=0){
+				let str = "";
+				$.ajax({
+				url:config.getRoutesByTime,
+				dataType:"json",	
+				type:"PUT",
+				async:false,
+				data:{
+					"time":histimeVal,
+					"checkline":hislineVal,
+					"deptid":1,//暂时写死
+				},
+				success:function(data){
+//					alert(data.jsonData)
+			let list=data.jsonData;
+				if(list.length != 0){
+				for(let i = 0;i < list.length;i++){
+					let line = "";
+						line += "<div class='datalist'>"
+//						line += "<h4><span class='mui-icon mui-icon-checkmarkempty'></span>本月计划进度表</h4>";
+						line += "<div id='linecheck'>"
+						line += "<table><tr><th>已检线路数/计划线路数<br><span id='checkdonetimes'>"+list[i].COMPLETENUM+"</span>条/<span id='checktimes'>"+list[i].PLANNUM+"</span>条</th>"
+						line += "<th>完成率<br><div class='progress-out' id='progline'><div class='percent-show'><span>"+(list[i].COMPLETENUM/list[i].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></th></tr>"
+						line += "<table></div>"
+					$(".monthdone").append(line);
+					}
+				}
+			}
+		});
+						str += "<div class='datalist'><table style='margin-top: -20px'><tr>"
+						str += "<th class='colfir' id='tb1'>检查项</th>"
+						str += "<th id='tb2'>已完成/计划次数</th>"
+						str += "<th id='tb3'>完成率</th><tr>"
+						
+						let order1 =new Array()
+						let order2 =new Array()
+						let order3 =new Array()
+						let order4 =new Array()
+								
+					for(let i = 0;i < list.length;i++){
+						let typename = list[i].TYPENAME;
+						if(typename === "车辆整洁"){
+							order1[0]=list[i];
+						}
+						if(typename === "车内服务设施"){
+							order2[0]=list[i];
+						}
+						if(typename === "车厢服务"){
+							order3[0]=list[i];
+						}
+						if(typename === "乘客满意度"){
+							order4[0]=list[i];
+						}
+					}
+									
+					for(let k = 0;k < order1.length;k++){
+						str += "<td class='colfir'>"+order1[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order1[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order1[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order1[k].COMPLETENUM/order1[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+					for(let k = 0;k < order2.length;k++){
+						str += "<td class='colfir'>"+order2[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order2[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order2[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order2[k].COMPLETENUM/order2[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+					for(let k = 0;k < order3.length;k++){
+						str += "<td class='colfir'>"+order3[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order3[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order3[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order3[k].COMPLETENUM/order3[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+					for(let k = 0;k<order4.length;k++){
+						str += "<td class='colfir'>"+order4[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order4[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order4[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order4[k].COMPLETENUM/order4[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+					
+		//计算总计数
+		$(document).ready(function() {
+			let sumdone=0; //已完成总计
+			$.each($(".checktimes"),function(index,time){ 
+				sumdone+= parseInt($.trim($(time).text()));	 
+			});
+			$(".sumdone").text(sumdone);
+						
+			let sumtotal=0; //计划次数总计
+			$.each($(".plantimeslist"),function(index,time){ 
+				sumtotal+= parseInt($.trim($(time).text()));	 
+							});
+			$(".sumtotal").text(sumtotal);
+		});	
+		
+						str +="<tr><th class='colfir'>总计</th><td><span class='sumdone' id='sumdone'></span>次/<span class='sumtotal' id='sumtotal'></span>次</td>";
+						str +="<td><div class='progress-out' id='progsum'><div class='percent-show'><span>0</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</th></tr></div></div></div>";
+						$(".monthdone").append(str);
+					}else{
+					let str="";
+						str+="<div style='width:100%;text-align:center;vertical-align:center;margin-top:120px' class='withoutmsg'>"
+						str+="<span style='font-size:20px'>暂无该时段线路计划信息</span>";
+						str+="</div>";
+						$("#text").append(str);
+						$(".monthdone")[0].style.display = 'none';
+					}
+				}
+			});
+		}
+			
+			window.addEventListener('reloadData', function (event) {
+					location.reload();
+				});
+				
+		</script>
+	</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+    <script src="js/common.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+	<style>		
+		/**标题栏背景色、高度设置**/
+		html,
+		body {
+			background-color: #efeff4;
+		}
+		header{
+			background-color: #6A7D8F !important;
+		}
+		h1{
+			color: #FAFAFA !important;
+		}
+		header,
+		h1 {
+			height: 50px !important;
+			line-height: 50px !important;
+		}					
+		/**开关按钮颜色设置**/
+		.mui-switch-MintGreen.mui-active
+		{
+		    border: 2px solid #80C5CC;
+		    background-color: #80C5CC;
+		}
+		.area {
+			margin: 20px auto 0px auto;
+		}
+		
+		.mui-input-group {
+			margin-top: 10px;
+		}
+		
+		.mui-input-group:first-child {
+			margin-top: 20px;
+		}
+		
+		.mui-input-group label {
+			width: 22%;
+		}
+		
+		.mui-input-row label~input,
+		.mui-input-row label~select,
+		.mui-input-row label~textarea {
+			width: 78%;
+		}
+		
+		.mui-checkbox input[type=checkbox],
+		.mui-radio input[type=radio] {
+			top: 6px;
+		}
+		
+		.mui-content-padded {
+			margin-top: 25px;
+		}
+		
+		.mui-btn {
+			padding: 10px;
+		}
+		
+		.link-area {
+			display: block;
+			margin-top: 25px;
+			text-align: center;
+		}
+		
+		.spliter {
+			color: #bbb;
+			padding: 0px 8px;
+		}
+		
+		.oauth-area {
+			position: absolute;
+			bottom: 20px;
+			left: 0px;
+			text-align: center;
+			width: 100%;
+			padding: 0px;
+			margin: 0px;
+		}
+		
+		.oauth-area .oauth-btn {
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+			background-size: 30px 30px;
+			background-position: center center;
+			background-repeat: no-repeat;
+			margin: 0px 20px;
+			/*-webkit-filter: grayscale(100%); */
+			border: solid 1px #ddd;
+			border-radius: 25px;
+		}
+		
+		.oauth-area .oauth-btn:active {
+			border: solid 1px #aaa;
+		}
+		
+		.oauth-area .oauth-btn.disabled {
+			background-color: #ddd;
+		}
+		
+
+   </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 id="title" class="mui-title">公交巡检项目</h1>
+	</header>
+	<div class="mui-content">
+		<form id='login-form' class="mui-input-group">
+			<div class="mui-input-row">
+				<label>账号</label>
+				<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入账号">
+			</div>
+			<div class="mui-input-row">
+				<label>密码</label>
+				<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+			</div>
+		</form>
+		<form class="mui-input-group">
+			<ul class="mui-table-view mui-table-view-chevron">
+				<li class="mui-table-view-cell">
+					记住密码
+					<div class="mui-switch mui-switch-MintGreen">
+					  <div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+		</form>
+		
+		<div class="mui-content-padded">
+			<button id='login' class="mui-btn mui-btn-block mui-btn-primary" style="background-color: #6a7d8f;border: none;">登录</button>
+			
+		</div>
+		<div class="mui-content-padded oauth-area" id="version">
+		</div>
+	</div>
+</body>
+<script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	//登录进程构造函数
+      	function LoginProcess(){
+      		this.isAndroid = null;   //是否为安卓系统
+      		this.isiOS = null;		//是否为ios系统
+      		this.backButtonPress = 0;   //安卓系统中的返回按钮点击次数
+      		this.wgtVer = null;   //当前APP版本号
+      		this.checkUrl = Route+"/secsev/pages/secsev/check/check.php";  //检查更新地址
+      		this.wgtUrl=Route+"/secsev/pages/secsev/check/update/update.wgt";  //下载wgt文件地址
+      		this.storage = window.localStorage;
+      		this.user = {
+      			username : null,
+      			password : null,
+      			issave : null
+      		}
+      	}
+      	
+      	//系统检测
+      	LoginProcess.prototype.checkSystem = function () {
+      		let userAgent = plus.navigator.getUserAgent();
+      		this.isAndroid = userAgent.indexOf('Android') > -1 || userAgent.indexOf('Adr') > -1; //android终端
+      		this.isiOS = !!userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+ 			if (this.isAndroid) {
+			  console.log('Android用户');
+			}
+			if (this.isiOS) {
+			  console.log('IOS用户');
+			}     		
+      	}
+      	
+      	//状态栏样式设置
+      	LoginProcess.prototype.setNavigatorStyle = function () {
+      		plus.navigator.setStatusBarBackground("#6a7d8f");	
+			plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );
+      	}
+      	
+      	//监听返回按钮退出APP
+      	LoginProcess.prototype.bindBackEvent = function () { 
+      		let _this = this;
+	 		mui.back = function(event) {
+				_this.backButtonPress++;
+				if (_this.backButtonPress > 1) {
+					plus.runtime.quit();
+				} else {
+					plus.nativeUI.toast('再按一次退出应用');
+				}
+				setTimeout(function() {
+					_this.backButtonPress = 0;
+				}, 1000);
+				return false;
+			};     		
+      	}
+      	
+      	//版本检测
+      	LoginProcess.prototype.checkVersion = function () {
+      		//获取本地应用资源版本号
+      		let _this = this;
+ 		    plus.runtime.getProperty(plus.runtime.appid,function(inf){
+		        _this.wgtVer=inf.version;
+		        console.log("当前应用版本："+_this.wgtVer);
+		        $("#version").html("V"+_this.wgtVer);
+		    });     		
+      	}
+      	
+      	//检查更新（只适用于安卓系统）
+      	LoginProcess.prototype.checkForUpdate = function () {
+      		let _this = this;
+		    console.log("检测更新...");
+		    let xhr=new XMLHttpRequest();
+		    xhr.onreadystatechange=function(){
+		        switch(xhr.readyState){
+		            case 4:
+		            if(xhr.status==200){
+		                console.log("检测更新成功："+xhr.responseText);
+		                let newVer=xhr.responseText;
+		                if(_this.wgtVer&&newVer&&(_this.wgtVer!=newVer)){
+		                	let btnArray = ['是', '否'];
+		                	mui.confirm('检测到有新版本，是否更新？', '更新', btnArray, function(e) {
+								if (e.index == 0) {
+									_this.downWgt();  // 下载升级包
+								} else {
+									
+								}
+							})
+		                    
+		                }else{
+		                    console.log("无新版本可更新！");
+		                }
+		            }else{
+		                console.log("检测更新失败！");
+		                plus.nativeUI.alert("检测更新失败！");
+		            }
+		            break;
+		            default:
+		            break;
+		        }
+		    }
+		    xhr.open('GET',this.checkUrl);
+		    xhr.send();      		
+      	}
+      	
+      	//下载更新文件（只适用于安卓系统）
+      	LoginProcess.prototype.downWgt = function () {
+      		let _this = this;
+		    plus.nativeUI.showWaiting("下载更新文件...");
+		    let dtask = plus.downloader.createDownload(_this.wgtUrl,{timeout:'5'},function(d,status){
+		    	console.log(JSON.stringify(d))
+		        if ( status == 200 ) { 
+		            console.log("下载更新文件成功："+d.filename);
+		            _this.installWgt(d.filename); // 安装wgt包
+		        } else {
+		            console.log("下载更新文件失败！");
+		            plus.nativeUI.alert("下载更新文件失败！");
+		        }
+		        plus.nativeUI.closeWaiting();
+		    });
+		    
+		    dtask.start();      		
+      	}
+      	
+      	//安装更新文件包（只适用于安卓系统）
+      	LoginProcess.prototype.installWgt = function (path) {
+		    plus.nativeUI.showWaiting("安装更新文件...");
+		    plus.runtime.install(path,{},function(){
+		        plus.nativeUI.closeWaiting();
+		        console.log("安装更新文件成功！");
+		        plus.nativeUI.alert("应用资源更新完成！",function(){
+		            plus.runtime.restart();
+		        });
+		    },function(e){
+		        plus.nativeUI.closeWaiting();
+		        console.log("安装更新文件失败["+e.code+"]："+e.message);
+		        plus.nativeUI.alert("安装更新文件失败["+e.code+"]："+e.message);
+		    });      		
+      	}
+      	
+      	//绑定监听网络事件
+      	LoginProcess.prototype.bindNetEvent = function () {
+			document.addEventListener("netchange",this.onNetChange,false);      		
+      	}
+      	
+      	//网络变更后触发的方法
+      	LoginProcess.prototype.onNetChange = function () {
+			let net = plus.networkinfo.getCurrentType();
+			if(net !=1){			
+				$('#login').removeAttr('disabled');
+			}else{
+				mui.toast('未检测到网络,请调整网络后再登录');
+				$('#login').attr('disabled','disabled');
+			}      		
+      	}
+      	
+      	//用户信息初始化
+      	LoginProcess.prototype.userInit = function () {
+			let _this = this;
+      		this.user.username = this.storage["username"];
+      		this.user.password = this.storage["password"];
+      		this.user.issave = this.storage["issave"];
+	 		if("true" == this.user.issave){
+				$("#account").val(this.user.username);
+				$("#password").val(this.user.password);
+				$(".mui-switch").addClass('mui-active');
+			}
+			$(".mui-switch").click(function() {
+				_this.user.issave = $(".mui-switch").hasClass('mui-active') ? 'true' : 'false';
+			});   
+			this.bindLogin();
+      	}
+      	
+      	//绑定登录事件
+      	LoginProcess.prototype.bindLogin = function () {
+      		let _this = this;
+			$("#login").bind("click",function(){
+				$('#login').attr('disabled','disabled');
+				_this.user.username = $("#account").val();
+				_this.user.password = $("#password").val();
+				let wt=plus.nativeUI.showWaiting('登录中');
+				$.ajax({
+					type: 'POST',
+					url:Route+"/syWeb/rs/device/login",
+					data:{username:_this.user.username,password:_this.user.password},
+					dataType:"json",
+					cache: false,
+					success: function(data){
+						console.log(data.message)
+						if(data.message=="登录成功"){
+							if("true" == _this.user.issave){
+								_this.storage["username"]=_this.user.username;
+								_this.storage["password"]=_this.user.password;
+								_this.storage["issave"] = "true";
+							}else{
+								_this.storage["username"]="";
+								_this.storage["password"]="";
+								_this.storage["issave"]="false";
+							}
+							_this.skipWindow();
+						}else{
+							mui.alert(data.message, '', function(){				
+							});
+							$('#login').removeAttr('disabled');
+						}
+						wt.close();
+					}
+				});				
+			});      		
+      	}
+      	
+      	LoginProcess.prototype.skipWindow = function(){
+      		let schedule_Link = "";
+			$.ajax({
+				type:"get",
+				url:config.getUnitByUser,
+				dataType:"json",
+				cache: false,
+				async:true,
+				success:function(data){
+					let list = data.jsonData;
+					let temp='';
+					let companyname='';
+					let tempst=""	
+					
+					if (list.length != 0) {
+						let deptidcount = list.length;
+						if(deptidcount === 1){
+							schedule_Link = "schedule_pers.html"
+						}
+						else if(deptidcount === 3){
+							schedule_Link = "schedule_co.html"
+						}
+						else if(deptidcount === 6){
+							schedule_Link = "schedule_super.html"
+						}	
+					}
+								
+					for(let i=0;i<list.length;i++){
+						let deptid=list[i].deptid;
+						let orgname=list[i].orgname;
+						
+						if(deptid.length>temp.length){
+							temp = deptid//获取deptid的最长的值(即具体公司的deptid)
+							tempst=temp.toString();
+						}
+						if(orgname.length>2&&orgname.length<8){
+							companyname = orgname//获取公司名
+						}
+					}	
+
+					let storage = window.localStorage;
+					storage["role"] = schedule_Link;
+					storage["deptid"] = temp;
+					storage["orgname"] = companyname;					
+					mui.openWindow({
+						url : 'home.html',
+						id : 'homePage',
+						extras : {
+							schedule_Link : schedule_Link
+						},
+						waiting : {
+							autoShow : false
+						}
+					});									
+				}
+			});      		
+      	}
+      	mui.plusReady(function(){
+			let process = new LoginProcess();
+			process.setNavigatorStyle(); //设置状态栏
+			process.bindBackEvent(); //绑定返回按钮
+			process.bindNetEvent();  //绑定网络监测
+			process.checkSystem();   //检测操作系统
+			process.checkVersion();  //检测版本号
+			if(process.isAndroid){   //若为安卓系统便检查版本号并更新安装包
+				process.checkForUpdate();
+			}
+			process.userInit();
+      	});
+			
+	
+</script>
+</html>

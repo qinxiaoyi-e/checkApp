@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/mui.picker.min.css" />
+<!--    <link rel="stylesheet" href="css/app.css" />-->
+</head>
+	<style>
+		body{
+			font-family: "微软雅黑";
+		}
+		
+		/**小屏字体设置**/
+		@media(max-width:320px){
+		.monthdone tr{
+			font-size: 0.85em;
+			}
+		}
+		
+		/**返回按钮、标题颜色设置**/
+		.myback,.mui-tit{
+			color: #FAFAFA;
+		}
+		/**标题栏背景色、高度设置**/
+		.schedule-head{
+			background-color: #6a7d8f;
+			height: 50px;
+		}
+		/**标题栏文字样式设置**/
+		.mui-tit{
+			margin-top: 0.9em;
+			text-align: center;
+			font-size: 1em;
+			font-weight: 400;
+		}
+		/**选择框后背景色、高度设置**/
+		.hisscreen{
+			/*margin-top: 5px;*/
+			height: 3.5em;
+			background-color: #81C6CD;
+			border: none;
+			}
+			
+		/**选择框边距设置**/
+		.sel{
+			padding: 15px 0 5px 5px;
+		}
+		
+		/**年月线路选择器设置**/
+		.histimesel,.selecttypesel,.hislinesel{
+			width: 32%;
+			height: 2em;
+			font-size: 0.9em;
+			display: inline-block;
+		}
+		
+		/**已完成计划模块样式设置**/
+		.monthdone,.inchargelist{
+			background-color: #FFFFFF;
+			box-shadow: 0 1px 2px rgba(0,0,0,.3);
+			border-radius: 2px 2px 0 0;
+			padding:1px 10px 5px 10px;
+			margin: 20px 10px;
+		}
+		/**表格样式设置**/
+		.monthdone table{
+			width: 100%;
+			border-bottom: solid 1px #F2F2F2;
+			text-align: center;
+			margin-bottom: 15px;
+		}
+		/**表格大标题样式设置**/
+		.monthdone h4,.inchargelist h4{
+			border-bottom: solid 1px #F2F2F2;
+			padding: 10px;
+			font-size: 1.2em;
+		}
+		/**表格横向列表样式设置**/
+		.monthdone th,.monthdone td{
+			border-bottom:  solid 1px #F2F2F2;
+			padding: 18px 5px;
+		}
+		/**表格纵向列表样式设置**/
+		.monthdone tr{
+			margin-left: 5px;
+		}
+		/**三纵列宽度分配**/
+		#tb1{
+			width: 35%;
+		}
+		#tb2{
+			width:43%;
+		}
+		#tb3{
+			width: 20%;
+		}
+		/**检查项纵列往左设置**/
+		.colfir{
+			text-align: left;
+		}
+		
+		/**进度条盒子样式**/
+		.progress-out {
+		    position: relative;
+		    border: 1px solid #13C2B6;
+		    background-color: #fff;
+		}
+		
+		/**进度条“进度”样式**/
+		.progress-in {
+		    position: absolute;
+		    height: 100%;
+		    width: 0%;
+		    border: none;
+		    background-color: #13C2B6;
+		    background-image: linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -webkit-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -moz-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -o-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    background-image: -ms-linear-gradient(top, #15E5D8 0%, #12EADE 40%, #1ABFB4 100%);
+		    text-align: center;
+		    color: #fff;
+		    z-index: 1;
+	}
+		/**进度条数字样式**/
+		.percent-show {
+		    position: absolute;
+		    width: 100%;
+		    height: 100%;
+		    top: 0;
+		    left: 0;
+		    color: #000;
+		    text-align: center;
+		    z-index: 2;
+
+	}
+		.person{
+			border-bottom:solid 1px #F2F2F2;
+		}
+		
+		#intit1{
+			margin-left: -10%;
+			width: 20%;
+			font-weight: bolder;
+		}
+		#intit2{
+			margin-left: 4%;
+			font-weight: bolder;
+			width: 45%;
+		}
+		#intit3{
+			font-weight: bolder;
+			width: 30%;
+		}
+		.per1{
+			padding: 10px 0 5px 0; 
+			color: #3B3B3B;
+			font-weight: 600;
+			width:30%;
+			text-align: center;
+		}
+		.per2{
+			padding: 10px 0 5px 0; 
+			color: #3B3B3B;
+			font-weight: 600;
+			width:48%;
+			text-align: center;
+		}
+		.per3{
+			padding: 10px 0 5px 0; 
+			color: #3B3B3B;
+			font-weight: 600;
+			width:35%;
+			text-align: center;
+		}
+		.det1{
+			color: #4D4D4D;
+			font-size: 14px;
+			width:22%;
+			text-align: center;
+		}
+		.det2{
+			color: #4D4D4D;
+			font-size: 14px;
+			width:36%;
+			text-align: center;
+			padding: 2px 0;
+		}
+		.det3{
+			color: #4D4D4D;
+			font-size: 14px;
+			width:15%;
+			text-align: center;
+			padding-right: 1%;
+		}
+		.Persontotal{
+			margin-top: 10px;
+		}
+		.Persondetails{
+			margin-top: 3px;
+		}
+		.inchargeper .progress-out{
+			margin-right: 20%;
+		}
+		.progress-out{
+			margin-left: 10%;
+		}
+		/**小屏字体设置**/
+			@media(max-width:320px){
+			.inchargetit li,.inchargeper li{
+				font-size: 0.85em;
+				}
+
+			.inchargeper .progress-out,.progress-out{
+				margin-right: 20%;
+			}
+			}
+		
+	</style>
+	<body>
+		<section class="schedule-section mui-content">
+			<div class="hisscreen">
+				<div class="sel">
+					<form>			
+					<button id="histime" name="histime" class="bustime btn mui-btn histimesel" ></button>
+					<button id="selecttype" name="selecttype" class=" btn mui-btn selecttypesel" type='button' >个人</button>
+					<button id="hisline" name="hisline" class=" btn mui-btn hislinesel" type='button' style="display: inline-table;">全部</button>
+					</form>
+				</div>
+			</div>
+			
+			<div class='monthdone' id="monthdone">
+				<h4><span class='mui-icon mui-icon-checkmarkempty'></span>本月计划进度表</h4>
+					<div id="loading" style='width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center'>
+						<font style='font-size:20px'>正在加载...</font>
+					</div> 
+			</div>
+			
+			<div class="inchargelist" id="inchargelist" style="display: none;">
+				<h4><span class='mui-icon mui-icon-checkmarkempty'></span>分管巡检人员计划进度</h4>
+			</div>
+		</section>
+		
+		<script type="text/javascript" src="js/mui.min.js" ></script>
+		<script type="text/javascript" src="js/mui.picker.min.js" ></script>
+		<script type="text/javascript" src="js/mui.poppicker.js" ></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+		<script type="text/javascript" src="js/Progress_schdl.js" ></script>
+		<script src="js/common.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		let homepage = null;
+		function SchCoProcess(){
+			this.year = null;
+			this.month = null;
+		}
+		
+		SchCoProcess.prototype.setNavigatorStyle = function () {
+      		plus.navigator.setStatusBarBackground("#6a7d8f");	
+			plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );
+      	}
+		mui.plusReady(function(){
+			let process = new SchCoProcess();
+				process.setNavigatorStyle();
+				process.getMonthtime();
+				process.getRoutesByTime();
+				process.queryDataByCondition_Sch();
+				process.queryDataByInspectors();
+				
+			homepage = plus.webview.getWebviewById('homePage');
+			
+			
+			//滑屏切换
+				ws=plus.webview.currentWebview();
+				wn=plus.webview.getWebviewById('show.html');
+				// 左滑显示新窗口
+				ws.drag({direction:'left',moveMode:'followFinger'}, {view:wn,moveMode:'follow'}, function(e){
+					let curr = plus.webview.currentWebview();
+					if(e.result === true){
+						mui.fire(homepage,'changeView',{
+					        item : 2,
+					        direction : 'left',
+					        itemName:ws.id
+					    });						
+					}			
+				});
+				// 右滑隐藏新窗口
+				wn.drag({direction:'right',moveMode:'followFinger'}, {view:ws,moveMode:'follow'}, function(e){
+					if(e.result === true){
+						mui.fire(homepage,'changeView',{
+					        item : 3,
+					        direction : 'right',
+					        itemName:wn.id
+					    });						
+					}			
+				});			
+		})
+		
+		/**时间选择器**/
+		mui('.hisscreen').on('tap','#histime',function(){
+			let dtPicker = new mui.DtPicker({
+				"type": "month",
+				});
+			dtPicker.show(function(his) {
+				let histimeBtn= document.querySelector('#histime');
+				let beforeHis = histime.innerHTML;
+					histimeBtn.innerHTML = his.value;
+						console.log(histime.innerHTML)
+					histimeBtn.style.color = '#000000';
+					if(beforeHis!=his.value){
+						console.log('已经更改时间');
+						$("#loading").css('display','block'); 
+						$(".withoutmsg").remove();
+						$(".person").remove();
+						$(".datalist").remove();
+						$(".inchargetit").remove();
+						let process = new SchCoProcess();
+							process.getRoutesByTime();
+							process.queryDataByCondition_Sch();
+							process.queryDataByInspectors();
+							}
+						});					
+					})
+		
+		/**单位类型选择器**/
+		let orgname = localStorage.getItem("orgname")
+			console.log(orgname)
+		let selecttypePicker = new mui.PopPicker();
+			picker_selecttypePicker();
+		function picker_selecttypePicker(){
+			selecttypePicker.setData([{
+				value: 'personal',
+				text: '个人'
+			}, {
+				value: 'buscompany',
+				text: orgname
+			}]);			
+		}	
+					
+					
+//		/**线路选择器**/
+		mui('.hisscreen').on('tap','#hisline',function(){
+			hislinePicker.show(function(items) {
+				let hislinePicker = document.querySelector('#hisline');
+				let beforehisline = hislinePicker.innerHTML;
+					hislinePicker.innerHTML = items[0].text;
+//						console.log(typePicker.innerHTML);
+					hislinePicker.innerHTML = items[0].text;
+					hislinePicker.style.color = '#000000';
+						if(beforehisline != items[0].text){
+							console.log('已更换线路')
+							$(".datalist").remove();
+							$(".person").remove();
+							$(".withoutmsg").remove();
+							$("#loading")[0].style.display = 'block';
+							let process = new SchCoProcess();
+								process.queryDataByCondition_Sch();
+								process.queryDataByInspectors();
+							}
+						});				
+					});
+					
+		/**类型选择器**/
+		mui('.hisscreen').on('tap','#selecttype',function(){
+			selecttypePicker.show(function(items) {
+				let selecttypePicker = document.querySelector('#selecttype');
+				let beforeselecttype = selecttypePicker.innerHTML;
+					selecttypePicker.innerHTML = items[0].text;
+//						console.log(typePicker.innerHTML);
+					selecttypePicker.innerHTML = items[0].text;
+					selecttypePicker.style.color = '#000000';
+					if(items[0].text !== '个人'){
+						$("#hisline")[0].style.display = 'none'; 
+							$(".histimesel")[0].style.width='48%';
+							$(".selecttypesel")[0].style.width='48%';
+								$(".inchargelist").css('display','block'); 
+					}else{
+						$("#hisline")[0].style.display = 'block'; 
+						$("#hisline")[0].style.display = 'inline'; 
+							$(".histimesel")[0].style.width='32%';
+							$(".hislinesel")[0].style.width='32%';
+							$(".selecttypesel")[0].style.width='32%';
+								$(".inchargelist").css('display','none'); 
+					}
+									  
+					if(beforeselecttype != items[0].text){
+						console.log('已更改类型为'+items[0].text);
+						$(".person").remove();
+						$(".datalist").remove();
+						$(".inchargetit").remove();
+						$(".withoutmsg").remove();
+						$("#loading")[0].style.display = 'block';
+						let process = new SchCoProcess();
+							process.queryDataByCondition_Sch();
+							process.queryDataByInspectors();
+					}
+				});				
+			});		
+
+					
+		/** 获取系统当前月份**/
+		SchCoProcess.prototype.getMonthtime = function () {
+//		function getMonthtime(){
+			let myDate = new Date();
+			let histime = document.querySelector('#histime');
+				this.year = myDate.getFullYear();
+				this.month = myDate.getMonth() + 1;
+				if(this.month <= 9){  
+           			this.month = "0" + this.month;  
+				}  
+				MonthTime = this.year+'-'+this.month;
+//					console.log(MonthTime);
+				histime.innerHTML=MonthTime;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+		}; 
+			
+			
+			
+		let hislinePicker = new mui.PopPicker();
+		SchCoProcess.prototype.getRoutesByTime = function () {
+			let histimeVal = $('#histime').html();
+			$.ajax({
+				type:"put",
+				url:config.getLinesByTime,
+				async:false,
+				data:{
+					"time":histimeVal,
+					"deptid":1
+				},
+				success:function(data){
+					let routes = data.jsonData;
+					let route_Arr = new Array();
+					let all = {
+						value:"",
+						text:"全部"
+					}
+				route_Arr.push(all);
+					if(routes.length > 0){
+					for(let i = 0 ; i < routes.length; i++){
+						let data = {
+							value : routes[i].CHECKLINE,
+							text : routes[i].CHECKLINE
+						}
+							route_Arr.push(data);
+						}							
+					}
+						hislinePicker.setData(route_Arr);
+					}
+				});
+			}			
+			
+		SchCoProcess.prototype.queryDataByCondition_Sch = function () {
+			$(document).ready(function() {
+				myProgress();
+		})
+			let deptid = localStorage.getItem("deptid")
+//			console.log(deptid)
+			let orgname = localStorage.getItem("orgname")
+//			console.log(orgname)
+				
+			let histimeVal = $('#histime').html();
+			let hislineVal = $('#hisline').html();
+				if(hislineVal === '全部')
+					{hislineVal = "";}
+//			console.log(histimeVal)
+			let selecttypeHTML = $('#selecttype').html();
+			let selecttypeVal;
+			let selecttypecount;
+				if(selecttypeHTML==='个人')
+					{selecttypeVal = "1"}
+				else if(selecttypeHTML=== orgname )
+					{selecttypeVal = deptid;hislineVal = ""}//权限问题完善后再参数传递
+						
+		$.ajax({
+			url:config.getRoutesByCheckType,
+			dataType:"json",	
+			type:"GET",
+			async:false,
+			data:{
+				"time":histimeVal,
+				"checkline":hislineVal,
+				"deptid":selecttypeVal,
+			},
+			success:function(data){
+//			alert(data.jsonData)
+			console.log(histimeVal)
+			console.log(selecttypeVal)
+			$("#loading")[0].style.display = 'none';
+//			$(".withoutmsg")[0].style.display = 'none';
+			let list=data.jsonData;
+				if(list.length!=0){
+				$(".monthdone")[0].style.display = 'block';
+				
+			let str = "";
+				$.ajax({
+					url:config.getRoutesByTime,
+					dataType:"json",	
+					type:"PUT",
+					async:false,
+					data:{
+						"time":histimeVal,
+						"checkline":hislineVal,
+						"deptid":selecttypeVal,
+					},
+					success:function(data){
+//					alert(data.jsonData)
+					let list=data.jsonData;
+						if(list.length!=0){
+						for(let i=0;i<list.length;i++){
+							let line = "";
+								line += "<div class='datalist'>";
+								line += "<div id='linecheck'>";
+								line += "<table><tr><th>已检线路数/计划线路数<br><span id='checkdonetimes'>"+list[i].COMPLETENUM+"</span>条/<span id='checktimes'>"+list[i].PLANNUM+"</span>条</th>";
+								line += "<th>完成率<br><div class='progress-out' id='progline'><div class='percent-show'><span>"+(list[i].COMPLETENUM/list[i].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></th></tr>";
+								line += "<table></div>";
+								$(".monthdone").append(line);
+							}
+						}
+					}
+				});
+								str += "<div class='datalist'><table style='margin-top: -20px'><tr>";
+								str += "<th class='colfir' id='tb1'>检查项</th>";
+								str += "<th id='tb2'>已完成/计划次数</th>";
+								str += "<th id='tb3'>完成率</th><tr>";
+									
+					let order1 =new Array()
+					let order2 =new Array()
+					let order3 =new Array()
+					let order4 =new Array()
+										
+					for(let i=0;i<list.length;i++){
+						let typename = list[i].TYPENAME;
+							if(typename === "车辆整洁"){
+								order1[0]=list[i];
+							}
+							if(typename === "车内服务设施"){
+								order2[0]=list[i];
+							}
+							if(typename === "车厢服务"){
+								order3[0]=list[i];
+							}
+							if(typename === "乘客满意度"){
+								order4[0]=list[i];
+							}
+						}
+									
+					for(let k=0;k<order1.length;k++){
+						str += "<td class='colfir'>"+order1[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order1[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order1[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order1[k].COMPLETENUM/order1[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+					for(let k=0;k<order2.length;k++){
+						str += "<td class='colfir'>"+order2[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order2[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order2[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order2[k].COMPLETENUM/order2[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+					for(let k=0;k<order3.length;k++){
+						str += "<td class='colfir'>"+order3[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order3[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order3[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order3[k].COMPLETENUM/order3[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+					for(let k=0;k<order4.length;k++){
+						str += "<td class='colfir'>"+order4[k].TYPENAME+"</td>";
+						str += "<td><span class='checktimes'>"+order4[k].COMPLETENUM+"</span>次/<span class='plantimeslist'>"+order4[k].PLANNUM+"</span>次</td>";
+						str +="<td><div class='progress-out progtype'><div class='percent-show'><span class='prec'>"+(order4[k].COMPLETENUM/order4[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</tr></tr>";	
+					}
+				
+				//计算总计数
+					$(document).ready(function() {
+					let sumdone=0; //已完成总计
+						$.each($(".checktimes"),function(index,time){ 
+							sumdone+= parseInt($.trim($(time).text()));	 
+						});
+					$(".sumdone").text(sumdone);
+													
+					let sumtotal=0; //计划次数总计
+						$.each($(".plantimeslist"),function(index,time){ 
+							sumtotal+= parseInt($.trim($(time).text()));	 
+						});
+					$(".sumtotal").text(sumtotal);
+				});
+						str +="<tr><th class='colfir'>总计</th><td><span class='sumdone' id='sumdone'></span>次/<span class='sumtotal' id='sumtotal'></span>次</td>";
+						str +="<td><div class='progress-out' id='progsum'><div class='percent-show'><span>0</span>%</div><div class='progress-in'></div></div></td>";
+						str += "</th></tr></div></div></div>";
+							$(".monthdone").append(str);
+						}else{
+					
+						let str="";
+							str+="<div style='width:100%;text-align:center;vertical-align:center;margin:20px 0'' class='withoutmsg'>";
+							str+="<span style='font-size:20px'>暂无该时段线路计划信息</span>";
+							str+="</div>";
+								$(".monthdone").append(str);
+							}
+						}
+					});
+				};
+					
+		SchCoProcess.prototype.queryDataByInspectors = function () {
+			$(document).ready(function() {
+			myProgress_person();
+		})
+			let histimeVal = $('#histime').html();		
+			let selecttypeHTML = $('#selecttype').html();
+//				console.log(selecttypeHTML)
+				if(selecttypeHTML == orgname){
+					$("#inchargelist").css('display','block'); 
+				}	
+					
+		$.ajax({
+			url:config.getCheckedByDeptid,
+			dataType:"json",	
+			type:"GET",
+			async:false,
+			data:{
+				"time":histimeVal,
+				"checkline":'',
+				"deptid":3,
+			},
+			success:function(data){
+			console.log(histimeVal)
+			let list=data.jsonData;
+			if(list.length != 0){										
+				for(let i = 0;i < list.length;i++){
+					let str = "";
+//						str += "<h4><span class='mui-icon mui-icon-checkmarkempty'></span>分管社会监督员计划进度</h4>";
+						str += "<table class='inchargetit' style='margin-top:10px;width:100%'>";
+						str += "<tr><th id='intit1'>检查人员</th><th id='intit2'>已完成/计划次数</th><th id='intit3'>完成率</th><tr>";
+						str += "<div type='hidden' value='"+list[i].USERID+"' ></div>"
+						str += "<div class='Persontotal'><tr><td class='per1'>"+list[i].FULLNAME+"</td>"
+						str += "<td class='per2'><span class='per' id='per'>"+list[i].COMPLETENUM+"</span>次/<span class='tot' id='tot'>"+list[i].PLANNUM+"</span>次</td>"
+						str += "<td class='per3'>"
+						str += "<div class='progress-out perprog'><div class='percent-show'><span>"+(list[i].COMPLETENUM/list[i].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div>"
+						str += "</div>"
+						str += "</td></tr></table>";
+						str += "<table class='person' style='width:100%'></table>"
+					$(".inchargelist").append(str);
+						
+					let pertimes = list.length;
+//						console.log(pertimes)
+					window.localStorage.setItem("pertimes",pertimes);
+					let dettimes = pertimes*4;
+//						console.log(dettimes)
+					window.localStorage.setItem("dettimes",dettimes);
+											
+		let userid = list[i].USERID;
+			$.ajax({
+				url:config.getCheckedByDeptid,
+				dataType:"json",	
+				type:"PUT",
+				async:false,
+				data:{
+					"time":histimeVal,
+					"checkline":'',
+					"deptid":3,
+					"userid":userid
+				},
+				success:function(data){
+			let list = data.jsonData;
+				if(list.length != 0){
+					let order1 = new Array()
+					let order2 = new Array()
+					let order3 = new Array()
+					let order4 = new Array()
+				for(let i = 0;i < list.length;i++){
+					let typename = list[i].TYPENAME;
+					if(typename === "车厢服务"){
+						order1[0]=list[i];
+					}
+					if(typename === "车辆整洁"){
+						order2[0]=list[i];
+					}
+					if(typename === "车内服务设施"){
+						order3[0]=list[i];
+					}
+					if(typename === "乘客满意度"){
+						order4[0]=list[i];
+				}
+			}													
+				let str = "";
+					for(let k = 0;k < order2.length;k++){
+						str = "<tr class='typelist'>";
+						str +="<td class='det1'>"+order2[k].TYPENAME+"</td>"
+						str +="<td class='det2'><span class='detdone' id='detdone'>"+order2[k].COMPLETENUM+"</span>次/<span class='totdone' id='totdone'>"+order2[k].PLANNUM+"</span>次</td>"
+						str +="<td class='det3'>"
+						str +="<div class='progress-out progdet'><div class='percent-show'><span>"+(order2[k].COMPLETENUM/order2[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div>"
+						str += "</td></tr>"
+					}
+					for(let k = 0;k < order3.length;k++){
+						str += "<tr class='typelist'>";
+						str +="<td class='det1'>"+order3[k].TYPENAME+"</td>"
+						str +="<td class='det2'><span class='detdone' id='detdone'>"+order3[k].COMPLETENUM+"</span>次/<span class='totdone' id='totdone'>"+order3[k].PLANNUM+"</span>次</td>"
+						str +="<td class='det3'>"
+						str +="<div class='progress-out progdet'><div class='percent-show'><span>"+(order3[k].COMPLETENUM/order3[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div>"
+						str += "</td></tr>"
+					}
+					for(let k = 0;k < order1.length;k++){
+						str += "<tr class='typelist'>";
+						str += "<td class='det1'>"+order1[k].TYPENAME+"</td>"
+						str += "<td class='det2'><span class='detdone' id='detdone'>"+order1[k].COMPLETENUM+"</span>次/<span class='totdone' id='totdone'>"+order1[k].PLANNUM+"</span>次</td>"
+						str += "<td class='det3'>"
+						str +="<div class='progress-out progdet'><div class='percent-show'><span>"+(order1[k].COMPLETENUM/order1[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div>"
+						str += "</td></tr>"
+					}
+					for(let k = 0;k < order4.length;k++){
+						str +="<tr class='typelist'>";
+						str +="<td class='det1'>"+order4[k].TYPENAME+"</td>"
+						str +="<td class='det2'><span class='detdone' id='detdone'>"+order4[k].COMPLETENUM+"</span>次/<span class='totdone' id='totdone'>"+order4[k].PLANNUM+"</span>次</td>"
+						str +="<td class='det3'>"
+						str +="<div class='progress-out progdet'><div class='percent-show'><span>"+(order4[k].COMPLETENUM/order4[k].PLANNUM*100).toFixed(0)+"</span>%</div><div class='progress-in'></div></div>"
+						str += "</td></tr>"
+					}
+							$(".person:last").append(str);
+						}
+					}
+				});
+			}	
+	}else{
+			let str="";
+				str+="<div style='width:100%;text-align:center;vertical-align:center;margin:20px 0' class='withoutmsg'>";
+				str+="<span style='font-size:20px;'>暂无该时段线路<br>分管巡检员计划进度信息</span>";
+				str+="</div>";
+				$(".inchargelist").append(str);
+					}
+				}
+			});
+		}
+
+			window.addEventListener('reloadData', function (event) {
+					location.reload();
+			});				
+		</script>
+	</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>公交巡检项目</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="css/mui.min.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			header{
+				background-color: #6A7D8F !important;
+			}
+			h1{
+				color: #FAFAFA !important;
+			}
+			header,
+			h1 {
+				height: 50px !important;
+				line-height: 50px !important;
+			}						
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 id="title" class="mui-title">公交巡检项目</h1>
+		</header>
+		<nav class="mui-bar mui-bar-tab">
+			<a id="defaultTab" class="mui-tab-item mui-active" href="mainpage.html">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">主界面</span>
+			</a>
+			<a class="mui-tab-item" href="checkplan.html">
+				<span class="mui-icon mui-icon-list"></span>
+				<span class="mui-tab-label">待检计划</span>
+			</a>
+			<a class="mui-tab-item" href="#" id='schedule'>
+				<span class="mui-icon mui-icon-spinner-cycle"></span>
+				<span class="mui-tab-label">计划进度</span>
+			</a>
+			<a class="mui-tab-item" href="show.html">
+				<span class="mui-icon mui-icon-compose"></span>
+				<span class="mui-tab-label">已检记录</span>
+			</a>
+		</nav>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/common.js" ></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+		<script type="text/javascript" charset="utf-8"> 
+			 //mui初始化
+			mui.init();
+			function WebviewProcess(pageName,pageStyle) {
+				this.pageName = pageName;
+				this.pageStyle = pageStyle;
+			}
+			WebviewProcess.prototype.createView = function(self){
+				let subView = plus.webview.create(this.pageName,this.pageName,this.pageStyle);
+				self.append(subView);
+			}
+			
+			mui.plusReady(function() {
+				let title = $('#title');
+				let self = plus.webview.currentWebview();						
+				let subpages = ['mainpage.html', 'checkplan.html',self.schedule_Link,'show.html'];
+				let nowTab = $(".mui-bar-tab>.mui-active").attr('href');
+				let subpage_style = [
+					{
+						top: '50px',
+						bottom: '50px'
+					},
+					{
+						left:'100%',
+						top: '50px',
+						bottom: '51px'
+					},
+					{
+						left:'200%',
+						top: '50px',
+						bottom: '51px'					
+					},
+					{
+						left:'300%',
+						top: '50px',
+						bottom: '51px'					
+					}
+				];				
+				plus.navigator.setStatusBarBackground("#6A7D8F");
+				$('#schedule').attr('href',self.schedule_Link);				
+				let viewsLen = subpages.length;
+				for (let i = 0; i < viewsLen; i++) {
+					let subObj = new WebviewProcess(subpages[i],subpage_style[i]);
+					subObj.createView(self);
+				}
+				 //选项卡点击事件
+				mui('.mui-bar-tab').on('tap', 'a', function(e) {
+					let targetTab = this.getAttribute('href');
+					if(nowTab !== targetTab){
+						nowTab = targetTab;
+						let htmltext = this.querySelector('.mui-tab-label').innerHTML;
+						htmltext = htmltext == '主界面' ? '公交巡检项目' :  htmltext;
+						title.html(htmltext);
+						let curr = plus.webview.getWebviewById(targetTab);					
+						curr.setStyle({left:'0px'}); //点击当前的选项卡将其移至屏幕中显示
+						for(let i=0;i<subpages.length;i++){
+							if(targetTab === subpages[i]){
+								let num1 = 100;
+								let num2 = -100;
+								for(let j = i+1 ; j<4 ;j++){ //在该webview之后的页面基于本页面右移
+									let other = plus.webview.getWebviewById(subpages[j]);		
+									other.setStyle({left: num1+'%'});
+									num1+=100;
+								}
+								for(let k = i-1 ; k>-1 ;k--){ //在该webview之前的页面基于本页面左移
+									let other = plus.webview.getWebviewById(subpages[k]);		
+									other.setStyle({left: num2+'%'});
+									num2-=100;							
+								}
+							}
+						}						
+					}
+				});	
+				
+				window.addEventListener('changeView',function(event){
+					let direction = event.detail.direction;
+					let changeTab = event.detail.item;
+					let tabname = event.detail.itemName;
+					let targetTab = '';
+					console.log(direction);
+					console.log(changeTab);
+					console.log(subpages[changeTab]);
+					switch (changeTab){
+						case 0:
+							if(direction === 'left'){
+								targetTab = subpages[changeTab+1];
+							}
+							break;
+						case 1:
+							if(direction === 'left'){
+								targetTab = subpages[changeTab+1];
+							}else{
+								targetTab = subpages[changeTab-1];
+							}
+							break;
+						case 2:
+							if(direction === 'left'){
+								targetTab = subpages[changeTab+1];
+							}else{
+								targetTab = subpages[changeTab-1];
+							}					
+							break;
+						case 3:
+							if(direction === 'right'){
+								targetTab = subpages[changeTab-1];
+							}					
+							break;						
+						default:
+							break;
+					}
+					let titletext = $('a[href="'+targetTab+'"]').find('.mui-tab-label').html();	
+					titletext = titletext == '主界面' ? '公交巡检项目' :  titletext;
+					nowTab = targetTab;
+					console.log('now:'+tabname);
+					console.log('target:'+targetTab);
+					$('a[href="'+tabname+'"]').removeClass('mui-active');
+					$('a[href="'+targetTab+'"]').addClass('mui-active');
+					title.html(titletext);
+				});					
+			});							
+		</script>
+	</body>
+
+</html>

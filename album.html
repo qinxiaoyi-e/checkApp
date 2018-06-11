@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">		
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/mui.preview.css" />
+		<style type="text/css">
+			*{
+				touch-action: none;
+			}
+			body {
+				font-family: "微软雅黑";
+			}			
+			header {
+				background-color: #6A7D8F !important;
+				color: #FAFAFA ;
+			}
+			header,
+			h1 {
+				height: 50px !important;
+				line-height: 50px !important;
+			}
+			h1 {
+				color: #FAFAFA !important;
+			}
+			h2{
+				margin-top: 50px;
+				display: none;
+			}
+			.mui-content{
+				padding-top: 50px 0 0;
+				text-align: center;
+				margin: 0 auto;
+			}
+			.mui-card-header{
+				padding: 0 15px !important;
+			}
+			.mui-icon{
+				font-size: 35px;
+			}
+			.mui-card{
+				display: inline-block;
+				margin: 2vh 1vh !important;
+				height: 40vh;
+				width: 45%;
+			}
+			.cont{
+				padding: 2vh;
+			}
+			.cont>img{
+				display: block;
+				margin: 0 auto;
+				width: 100%;
+				height: 29vh;
+			}									
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<span class="mui-icon mui-icon-arrowleft mui-action-back"></span>
+			<h1 class="mui-title">已拍摄图片</h1>
+		</header>
+		
+		<div class="mui-content">
+		</div>
+		
+
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+		<script type="text/javascript" src="js/mui.zoom.js" ></script>
+		<script type="text/javascript" src="js/mui.previewimage.js" ></script>
+		<script type="text/javascript">
+			let imgArr =[];
+			let imgLenAcount = 0;
+			let domId = '';
+			let lastPage = null;
+			mui.init({
+				swipeBack:true,				
+			});
+			let o_back = mui.back;
+			mui.back = function(){
+				let domLen = document.querySelectorAll('.mui-card');
+				if (domLen.length != imgLenAcount){
+					mui.fire(lastPage,"changePic",{
+						data: imgArr,
+						domId : domId
+					});					
+				}
+				o_back();
+			}
+			mui.previewImage();
+			mui.plusReady(function(){
+				let self = plus.webview.currentWebview();
+				let muiContent = document.querySelector('.mui-content');
+				let btn = ["确定","取消"];
+				imgArr = self.imgArray;
+				imgLenAcount = imgArr.length;
+				domId = self.domId;
+				if(lastPage == null){
+					lastPage = self.opener();
+				}				
+				for(let i = 0; i<imgArr.length;i++){
+					let muiCard = document.createElement('div');
+					muiCard.className = 'mui-card';
+					
+					let muiCardHeader = document.createElement('div');
+					muiCardHeader.className = 'mui-card-header';
+					let emptySpan = document.createElement('span');
+					let closeSpan = document.createElement('span');
+					closeSpan.className = 'mui-icon mui-icon-closeempty';
+					muiCardHeader.appendChild(emptySpan);
+					muiCardHeader.appendChild(closeSpan);
+					
+					let muiCardContent = document.createElement('div');
+					muiCardContent.className = 'mui-card-content cont';
+					let img = document.createElement('img');
+					img.src = imgArr[i];
+					img.setAttribute('data-preview-src','');
+					img.setAttribute('data-preview-group','1');
+					muiCardContent.appendChild(img);
+					
+					muiCard.appendChild(muiCardHeader);
+					muiCard.appendChild(muiCardContent);
+					
+					muiContent.appendChild(muiCard);
+				}
+				mui('.mui-card').on('tap','.mui-icon-closeempty',function(){
+					let _this = this;
+				  	mui.confirm('确定要删除该张图片吗？','已拍摄图片',btn,function(e){
+				    	if(e.index==0){
+							//确定删除
+							let deleteDom = _this.parentNode.parentNode;
+							let fatherDom = deleteDom.parentNode;
+							let deleteImgSrc = deleteDom.querySelector('img').src;
+							let index = imgArr.indexOf(deleteImgSrc);
+							fatherDom.removeChild(deleteDom);
+							imgArr.splice(index,1);	
+							
+							if (imgArr.length ===0){
+								mui.fire(lastPage,"changePic",{
+									data: imgArr,
+									domId : domId
+								});									
+								plus.webview.close(self);								
+							}
+				    	}
+				  	});					
+				});	
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="css/mui.min.css">
+		<script type="text/javascript" src="js/common.js" ></script>
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			/*卡片视图css*/
+			.mui-scroll{
+				padding: 5px 0;
+			}
+			.mui-card{
+				margin-top: 20px;
+			}
+			.mui-card .mui-icon {
+				color: #0062CC;
+				font-size: 20px;
+			}
+			.mui-card-content {
+				padding: 20px 25px 0px 25px;
+			}
+			.mui-card-content div {
+				margin-bottom: 15px;
+			}
+			.infoplan{
+				display: inline-block;
+			}
+			.infofinish{
+				display: inline-block;
+				float: right;
+			}
+			.timeout{
+				text-align: center;
+				margin: 10px;
+				display: none;
+			}
+			/*
+			 * 标题css
+			 */
+			.mui-table-view{
+				margin: 10px;
+				text-align: center;
+			}
+			.mui-table-view:before,.mui-table-view:after{
+				background-color: #FAFAFA;
+			}
+			.istemp{
+				color: #0066FF;
+				float: right;
+			}
+			.lineno{
+				margin-left: 10px;
+				color: #0062CC;
+				font-size: 18px;
+				font-weight: 600;
+			}		
+			/*底部结束分割线*/
+			.endborder {
+				padding-top: 8px;
+			}
+	
+			.endborder hr {
+				border-top: 1px solid #AAAAAA;
+			}
+			/*底部结束分割线文字*/
+			.hrtext {
+				position: relative;
+				width: 75px;
+				background-color: #EFEFF4;
+				left: 40%;
+				text-align: center;
+				top: -20px;
+				padding: 0 2%;
+				font-size: 15px;
+				color: #AAAAAA;
+			}	
+		</style>
+	</head>
+
+	<body>
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul class="mui-table-view">
+				    <li class="mui-table-view-cell">
+				    </li>
+				</ul>
+				<div class="timeout">
+						<span class="mui-badge mui-badge-warning">
+							请求超时,请下拉重新获取数据
+							<span class="mui-icon mui-icon-refreshempty" style="font-size: 18px;"></span>
+						</span>
+				</div>
+				<div id="plan-card">
+					
+				</div>
+			</div>
+		</div>	
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+		<script>
+			function CheckplanProcess(){
+				this.tex=null;
+				this.nowMonth=null;
+				this.nowDay=null;
+				this.nowYear=null;
+				this.Month=null;
+				this.Day=null;
+				this.Year=null;
+				this.cha=null
+		}
+		
+		//状态栏样式设置
+      	CheckplanProcess.prototype.setNavigatorStyle = function () {
+      		plus.navigator.setStatusBarBackground("#6a7d8f");	
+			plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );
+      	}
+      	
+			let homepage = null;
+			mui.plusReady(function(){
+			homepage = plus.webview.getWebviewById('homePage');
+			
+						
+				ws=plus.webview.currentWebview();
+				let role = window.localStorage["role"];
+				wn=plus.webview.getWebviewById(role);
+				// 左滑显示新窗口
+				ws.drag({direction:'left',moveMode:'followFinger'}, {view:wn,moveMode:'follow'}, function(e){
+					let curr = plus.webview.currentWebview();
+					if(e.result === true){
+						console.log('id:'+ws.id);
+						console.log(homepage.id);
+						mui.fire(homepage,'changeView',{
+					        item : 1,
+					        direction : 'left',
+					        itemName:ws.id
+					    });						
+					}			
+				});
+				// 右滑隐藏新窗口
+				wn.drag({direction:'right',moveMode:'followFinger'}, {view:ws,moveMode:'follow'}, function(e){
+					if(e.result === true){
+						mui.fire(homepage,'changeView',{
+					        item : 2,
+					        direction : 'right',
+					        itemName:wn.id
+					    });						
+					}			
+				});
+			
+			let process = new CheckplanProcess();
+				process.setNavigatorStyle(); 
+				process.getCheckPlan(); 
+			/*
+			 * ajax后台请求待检计划数据
+			 */
+			let content = $('.mui-scroll>.mui-card').length;
+			if(content === 0){
+				$('li').text('待检计划加载中...');			
+//				plus.nativeUI.showWaiting('数据加载中');		
+//				let process = new CheckplanProcess();
+//				process.getCheckPlan(); 		
+				/*
+				 * 监听待检计划中的卡片视图的点击事件
+				 */
+				mui('.mui-scroll').on('tap','.mui-card',function(){
+					let plan_num = $(this).find('.infonum').find('span').next().html();
+					mui.openWindow({
+						url : 'checklist.html',
+						id : 'checkPlan',
+						extras : {
+							plannum : plan_num
+						},
+						waiting : {
+							autoShow : false
+						}
+					});								
+				});				
+			}
+
+			});	
+			
+			/*
+			 * 加载待检计划
+			 */
+			CheckplanProcess.prototype.getCheckPlan = function () {
+//			function getCheckPlan(){
+				$.ajax({
+					url:config.getCheckPlan,
+					dataType:"json",	
+					type:"PUT",
+					async : true,
+					timeout : 2000,
+					data:{
+					      "iscomplete":"0"
+					},
+					success:function(data){
+						$('li')[0].style.display = 'block';
+						$('li').text('');		
+						$(".timeout")[0].style.display = 'none';
+						plus.nativeUI.closeWaiting();
+//						console.log('123'+data.jsonData);
+						let list=data.jsonData;
+						if(list.length!=0){	
+							let routes = 0;
+							let cars = 0;
+							for(let i=0;i<list.length;i++){
+								let str="";
+								str+='<div class="mui-card">';
+									str+='<div class="mui-card-header">';						
+										str+='<span class="lineno"><span class="mui-icon mui-icon-flag"></span>';
+										str+=list[i].checkline+'</span>';
+									str+='</div>';
+									str+='<div class="mui-card-content">';
+										str+='<div class="infoplan">';
+											str+='<span class="mui-icon mui-icon-compose"></span>';
+											str+='计划车次：<span>'+list[i].plannum+'</span>';
+										str+='</div>';
+										str+='<div class="infofinish">';
+											str+='<span class="mui-icon mui-icon-checkmarkempty"></span>';
+											str+='完成车次：<span>'+list[i].completenum+'</span>';
+										str+='</div>';										
+										str+='<div class="infonum">';
+											str+='<span class="mui-icon mui-icon-info"></span>';
+											str+='计划编号：<span>'+list[i].planno+'</span>';
+											if(list[i].istemp === '临时巡检')
+												str+='<span class="istemp">'+list[i].istemp+'</span>';
+										str+='</div>';
+									str+='</div>';
+									str+='<div class="mui-card-footer">';
+										str+='<span>截止：'+list[i].endtime+'</span>';
+										str+='<span class="scpguid">'+list[i].scpguid+'</span>';
+										str+='<div>'+daysBetween(list[i].endtime)+'</div>';
+									str+='</div>';
+								str+='</div>';
+								if(i == list.length-1){
+									str+='<div class="endborder checkedlist"><hr><div class="hrtext">到底啦</div></div>';									
+								}
+									$('#plan-card').append(str);
+									cars+=list[i].plannum-list[i].completenum;
+									routes++;
+								}
+							$('li').append('<h4>待检线路共<span style="color:#007AFF;"> '+routes+' </span>条▪待检车辆共<span style="color:#007AFF;"> '+cars+' </span>车次</h4>');
+						}else{
+								$('li').text('暂无待检计划');
+							}
+						},
+						error:function(data){
+							console.log('请求超时');
+							mui.toast('请求超时 请检查网络\n再次下拉屏幕进行数据刷新');
+							$('li')[0].style.display = 'none';
+							$(".timeout")[0].style.display = 'block';
+							}
+					});				
+			}
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					$('li').children('h4').remove();
+					$('#plan-card').children('div').remove();
+					let process = new CheckplanProcess();
+					process.getCheckPlan(); 
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+				}, 1500);
+			}			
+			/*
+			 * 求两个时间的天数差	
+			 */
+
+			function daysBetween(DateTwo)
+			{
+				let myDate = new Date();
+				this.nowMonth = myDate.getMonth()+1; //系统月份从0开始,11结束,注意要加1
+				this.nowDay = myDate.getDate();
+				this.nowYear = myDate.getFullYear();
+				
+				this.Month = DateTwo.substring(5,DateTwo.lastIndexOf ('-'));
+				this.Day = DateTwo.substring(DateTwo.length,DateTwo.lastIndexOf ('-')+1);
+				this.Year = DateTwo.substring(0,DateTwo.indexOf ('-'));
+				
+				this.cha=((Date.parse(Month+'/'+Day+'/'+Year)- Date.parse(nowMonth+'/'+nowDay+'/'+nowYear))/86400000)+1;
+				if(this.cha>0)
+					this.tex = '剩余<span style="color:blue;">'+this.cha+'天</span>'
+				else
+					this.tex = '已过期<span style="color:blue;">'+Math.abs(this.cha)+'天</span>';
+				return this.tex;
+			}	
+			
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						callback: pulldownRefresh
+					}
+				}
+			});
+			
+			/*
+			 * 监听从某路待检计划返回的数据
+			 */
+			window.addEventListener('refreshData',function(eve){
+					location.reload();	 //刷新页面重新获取数据		
+			});			
+		</script>
+	</body>
+</html>

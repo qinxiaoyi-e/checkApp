@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	    <title></title>
+	    <link href="css/mui.min.css" rel="stylesheet" />
+<!--	   	<link rel="stylesheet" href="css/app.css" />-->
+		<link rel="stylesheet" href="css/mui.picker.min.css" />
+
+	</head>
+	
+		<style>
+		/**返回按钮、标题颜色设置**/
+		.myback,.mui-tit{
+			color: #FAFAFA;
+			font-weight: bolder;
+		}	
+		/**标题栏背景色、高度设置**/
+		.schedule-head{
+			background-color: #6a7d8f;
+			height: 50px;
+		}
+		/**标题栏文字样式设置**/
+		.mui-tit{
+			text-align: center;
+			margin-top: 1em;
+			font-size: 1em;
+			font-weight: 500;
+		}
+		
+		.mui-collapse-content li{
+			list-style-type: none;
+			padding: 15px;
+			font-size: 16px;
+			border-bottom: solid 1px #F0F0F0;
+		}
+		.checkTime{
+			font-size: 15px;
+		}
+		.subTime{
+			display: none;
+		}
+		
+		.subTime_ran{
+			margin-left: 10%;
+		}
+		
+		.temporary{
+			float: right;
+			margin-right: 5%;
+			color: #007AFF;
+			font-size:14px
+		}
+		</style>
+		
+		
+	<body>
+		<header class="schedule-head mui-bar mui-bar-nav">
+			<a class="myback mui-icon mui-icon-left-nav mui-pull-left mui-action-back"></a>
+			    <h1 class="mui-tit"></h1>
+		</header>
+		
+			
+		<div id="loading" style='margin-top:50px;width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center'>
+			<font style='font-size:20px'>正在加载...</font>
+		</div>
+		
+		<section class="mui-content"></section>
+	
+	</body>
+	
+	
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/common.js" ></script>
+	<script type="text/javascript" src="js/jquery-3.2.1.js" ></script>
+	<script type="text/javascript" src="js/mui.picker.min.js" ></script>
+
+   
+   <script>
+   		mui.init({
+			swipeBack:true,
+		});
+		mui.plusReady(function(){
+				// 设置系统状态栏背景颜色
+			plus.navigator.setStatusBarBackground("#6a7d8f");//header颜色为#6a7d8f
+				// 设置系统状态栏样式为浅色文字
+			plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );	
+			
+			var self = plus.webview.currentWebview();
+			var checkline = self.checkline;
+			var starttime = self.starttime;
+			var endtime = self.endtime;
+			var istemp = self.istemp;
+//				console.log(checkline);
+//				console.log(starttime);
+//				console.log(endtime);
+//				console.log(istemp);
+			
+
+		$.ajax({
+			url:config.secCheckRecordByTime,
+			dataType:"json",	
+			type:"PUT",
+			async:true,
+			data:{
+				"checkline":checkline,
+				"starttime":starttime,
+				"endtime":endtime,
+				"istemp":istemp
+				},
+			success:function(data){
+				$("#loading").remove();
+				var list=data.jsonData;
+				$(".mui-tit").html(checkline+"已检查信息");
+				if(list.length>0){
+					for(var i=0;i<list.length;i++){
+						var str = "";
+							str += "<div class='mui-card'>"
+							str += "<ul class='mui-table-view'>";
+							str += "<li class='mui-table-view-cell mui-collapse'>";
+							str += "<a class='mui-navigate-right checkTime'>"+list[i].CHECKTIME+"<span class='mui-badge mui-badge-warning'>车次："+list[i].COMPLETENUM+"</span></a>";
+							str += "<ul class='mui-collapse-content'>";
+							str += "</ul></li></ul></div>"
+							$(".mui-content").append(str);
+								
+									
+					var checktime = list[i].CHECKTIME;//获取上一个ajax的返回值
+					$.ajax({
+						url:config.secCheckRecordByOneTime,
+						dataType:"json",
+						type:"GET",
+						async:false,
+						data:{
+							"checkline":checkline,
+							"checktime":checktime,
+							"istemp":istemp
+						},
+						success:function(data){
+						var list=data.jsonData;
+							if(list.length>0){
+								for(var y=list.length-1;y>-1;y--){
+									var drop = "";
+										drop += "<li>"
+										drop += "<span class='CarPlate'>"+list[y].BUSNO+"</span>";
+										drop += "<span class='subTime_ran'>"+list[y].CHECKTIMES+"</span>";	
+										drop += "<span class='subTime'>"+list[y].CHECKTIME+"</span>";												
+											if(list[y].ISTEMP == '临时巡检')
+										drop +="<span class='temporary'>"+list[y].ISTEMP+"</span></li>"
+										$(".mui-collapse-content:last").append(drop);
+									}
+								}
+							}
+						});						
+					}
+				}
+			}
+		});
+			mui('.mui-content').on('tap','.mui-collapse-content>li',function(){
+				var cars = $(this).find('.CarPlate').html();
+				var subtimes = $(this).find('.subTime').html();
+				console.log(cars);
+				console.log(subtimes);
+				mui.openWindow({
+					url : 'showdetail.html',
+					id : 'showdetail',
+					waiting:{
+							autoShow:false
+					},
+					extras:{
+						carnums : cars,
+						subtimes : subtimes,
+						ways : checkline
+					}
+				});
+			});
+		})
+   </script>
+</html>

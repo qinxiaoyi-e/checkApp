@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<script src="js/mui.min.js"></script>
+		<link rel="stylesheet" href="css/mui.min.css">
+		<script src="js/jquery-1.7.1.js"></script>
+		<script src="js/common.js"></script>
+		<style>
+			body{
+    			font-family: "微软雅黑";
+    			background-color: #EFEFF4;
+    		}
+    		.mui-content{
+    			margin-top: 15px;
+    		}
+	    	/**返回按钮、标题颜色设置**/
+			.myback,.mui-title{
+				color: #FAFAFA;
+			}
+			/**标题栏背景色、高度设置**/
+			.checktype-head{
+				background-color: #6a7d8f;
+				height: 50px;
+			}
+
+			/**项目框背景色、高度设置**/
+	    	.checktype{
+	    		text-indent: 10px;
+	    		background-color: #FFFFFF;
+				box-shadow: 0 1px 2px rgba(0,0,0,.3);
+				border-radius: 2px 2px 0 0;
+				padding:20px 10px;
+				margin: 10px;
+	    	}
+	    	/**项目框计划车次、完成车次字体设置**/
+	    	.checktype span{
+	    		font-size: 16px;
+	    	}
+	    	/**项目框计划车次、完成车次位置**/
+	    	.typedata{
+	    		padding: 8px 0 0 0;
+	    		color: #242424
+	    		margin-left: 15px;
+	    	}
+	    	
+	    	.typedata span{
+	    		margin-left: 15px;	
+	    	}
+			/**项目框项目标题设置**/
+			.typetit{
+				border-left: solid 5px #3B95FA;
+				font-weight: 600;
+			}
+	    	
+	    	/**开始检查按钮样式设置**/
+		    .begin{
+		    	position: relative;
+		    	left: 35%;
+		    	width: 30%;
+	    		background-color: #3B95FA;
+	    		border: none;
+	    		font-weight: 600;
+	    		color: white;
+	    		top: 10px;
+	    		font-size: 16px;
+	    		margin-bottom: 30px;
+	    	}
+	    	
+	    	/*
+	    	 * 折叠表
+	    	 */
+	    	.mui-table-view:before{
+	    		background-color: #FAFAFA;
+	    	}
+	    	.mui-table-view:after{
+	    		background-color: #FAFAFA;
+	    	}
+	    	.typecontent{
+	    		height: 40px;
+	    		line-height: 40px;
+	    		font-weight: bold;
+	    	}
+	    	
+	    	/*
+	    	 * 待提交的巡检记录
+	    	 */
+	    	#savePro{
+	    		display: none;
+	    	}
+	    	.saved{
+	    		font-weight:bold;	    	
+			}
+	    	#savePro button{
+	    		width: 46%;
+	    	}
+	    	#savePro>div{
+	    		margin-top: 18px;
+	    	}
+	    	.mui-input-group::after,#savePro>div>div:last-child::after{   /*清除最后一个元素的after*/
+				background: none;
+	    	}
+	    	
+	    	.allbtn{
+	    		text-align: center;
+	    	}
+	    	.allbtn button{
+	    		width: 35%;
+	    		position: relative;
+	    		border: none;
+	    		font-weight: 600;
+	    		color: white;
+	    		top: 10px;
+	    		font-size: 16px;
+	    		background-color: #159052;
+	    		margin-bottom: 25px;
+	    	}
+	    	#changeAll{
+	    		margin-right: 20px;
+	    	}
+	    	.mui-icon-chatboxes{
+	    		color:#159052;
+	    		font-weight:bolder;
+	    		
+	    	}
+		</style>
+	</head>
+
+	<body>
+		<header class="checktype-head mui-bar mui-bar-nav">
+			<!--<a class="myback mui-icon mui-icon-left-nav mui-pull-left mui-action-back"></a>-->
+			<span class="myback mui-icon mui-icon-arrowleft mui-action-back"></span>	
+			<h1 class="mui-title"></h1>
+		</header>
+		<div class="mui-content" id="saveContent"></div>
+		<div class="mui-content" id="planContent" style="margin-top: -45px;"></div>
+		<div id="loading" style='width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center'>
+			<font style='font-size:20px'>正在加载...</font>
+		</div>
+
+		<script type="text/javascript">
+			mui.init({
+				swipeBack:true,
+			});
+			let o_back = mui.back;
+			let lastPage = null; //存放上一个页面的变量
+			let showPage = null;	
+			let schedule = null;
+			mui.plusReady(function(){
+					// 设置系统状态栏背景颜色
+				plus.navigator.setStatusBarBackground("#6a7d8f");//header颜色为#6a7d8f
+					// 设置系统状态栏样式为浅色文字
+				plus.navigator.setStatusBarStyle( "UIStatusBarStyleBlackOpaque" );		
+				
+				showPage = plus.webview.getWebviewById('show.html');
+				
+				let role = window.localStorage["role"];
+				schedule=plus.webview.getWebviewById(role);
+				
+				let self = plus.webview.currentWebview();
+				if(lastPage == null){
+					lastPage = self.opener();					
+				}
+			});
+	
+			let planno = '';
+			let hadSaveArr = new Array();  //折叠表中存放已保存的数组
+			let SaveArr = new Array();  //待提交的巡检记录中的数组
+			mui.plusReady(function(){
+				//let w=plus.nativeUI.showWaiting();
+				let self = plus.webview.currentWebview();
+				planno = self.plannum;
+				plus.nativeUI.showWaiting();
+				$.ajax({
+					url:config.getCheckPlanByNum,
+					dataType:"json",	
+					type:"GET",
+					async:true,
+					data:{
+					      "planno":planno
+					},
+					success:function(data){
+						$("#loading").remove();
+						let list=data.jsonData.list;
+						$(".mui-title").html(list[0].checkline+"待检查计划");
+						let mystr = "";
+						if(list.length!=0){
+							for(let i=0;i<list.length;i++){
+								let str="";
+								str+="<div class='checktype'>";
+									str+="<input type='hidden' name='scpguid' value='"+list[i].scpguid+"' />";
+									str+="<span class='typetit'>&nbsp&nbsp"+list[i].typename+"</span><br/>";
+									str+="<div class='typedata'>";
+										str+="<ul class='mui-table-view'>"; 
+										    str+="<li class='mui-table-view-cell mui-collapse'>";
+										    str+="<a class='mui-navigate-right' href='#'>";
+											str+="<span class='mui-icon mui-icon-compose'>计划车次："+list[i].plannum+"</span>";
+											str+="<span class='mui-icon mui-icon-checkmarkempty'>完成车次："+list[i].completenum+"</span>";							    
+										    str+="</a>";
+										    str+="<div class='mui-collapse-content'>";
+													$.ajax({
+														url:config.getCheckRecordById+list[i].scpguid,
+														dataType:"json",
+														type:"GET",
+														async:false,
+														success:function(data){															
+															let lists=data.jsonData.list;
+															if(lists.length>0){
+							   									for(let j=0;j<lists.length;j++){
+																	str+="<div class='typecontent'>";
+																	str+="<input type='hidden' name='scrguid' value='"+lists[j].scrguid+"' />";
+																	str+="<span style='float:left;'>"+lists[j].busno+"</span>";
+																	str+="<span style='float:right'>";
+																	if(lists[j].issubmit=="1"){
+																		str+="<span>【已提交】</span>";
+																	}else{
+																		str+="<span class='hadsave'>【已保存】</span>";
+																		let data = {
+																			checkname : list[i].typename,
+																			scpguid : list[i].scpguid,
+																			scrguid : lists[j].scrguid,
+																			busnunm : lists[j].busno
+																		};
+																		hadSaveArr.push(data);
+																	}
+																	str+="</span>";
+																	str+="</div>";
+							   									}																
+															}else{
+																str+="<small>暂未有保存或提交记录</small>"
+															}
+														}
+													});
+										    str+="</div>";
+										    str+="</li>";
+									    str+="</ul>";
+									str+="</div>";
+								str+="</div>";
+								if(list[i].typename === '乘客满意度'){
+									mystr = str;
+								}else{
+									$(".mui-content:last-of-type").append(str);									
+								}
+							}
+								$(".mui-content:last-of-type").append(mystr);
+								let begin="";
+								begin+="<button class='begin'>开始检查</button>";
+								$(".mui-content:last-of-type").append(begin);
+								getData(); //获取该循环的巡检项目
+								checkData()
+						}else{
+							let str="";
+								str+="<div style='width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center'>"
+								str+="<font style='font-size:20px'>暂无巡检计划</font>";
+								str+="</div>";
+								$(".mui-content:last-of-type").append(str);
+						}
+						plus.nativeUI.closeWaiting();
+						console.log('已保存的计划长度:'+hadSaveArr.length);						
+//						for(let i = 0 ; i < hadSaveArr.length;i++){
+//							console.log(hadSaveArr[i].busnunm);
+//							console.log(hadSaveArr[i].checkname);
+//							console.log(hadSaveArr[i].scpguid);
+//							console.log(hadSaveArr[i].scrguid);
+//						}
+						if(hadSaveArr.length>0){
+							let carArr = new Array();
+							for(let j = 0 ; j < hadSaveArr.length ; j++){
+								let exist = $.inArray(hadSaveArr[j].busnunm,carArr);
+								if(exist === -1){
+									carArr.push(hadSaveArr[j].busnunm);
+								}							
+							}
+							for(let k = 0 ; k < carArr.length ; k++){
+								let obj = {
+									carnumber : carArr[k]
+								}
+								let dataArr = new Array();
+								for( l = 0 ; l < hadSaveArr.length ; l++){
+									let dataObj = new Object();
+									if(carArr[k] == hadSaveArr[l].busnunm){
+										dataObj.checkname = hadSaveArr[l].checkname;
+										dataObj.scpguid = hadSaveArr[l].scpguid;
+										dataObj.scrguid = hadSaveArr[l].scrguid;
+										dataArr.push(dataObj);
+									}								
+								}
+								obj.data = dataArr;
+								SaveArr.push(obj);
+							}
+							for(let p = 0 ; p<SaveArr.length ; p++){
+								let str = '';
+								console.log(SaveArr[p].carnumber);
+								str += '<div class="checktype" id="savePro"><span class="mui-icon mui-icon-chatboxes" style="font-size:22px;"></span><span class="saved" style="font-size:18px;">&nbsp待提交的巡检记录</span>';
+								str += '<div class="mui-input-group">';
+								str += '<div class="mui-input-row mui-radio">';
+								str += '<label>'+SaveArr[p].carnumber+'</label>';
+								str += '<input name="carnum" type="radio" value="'+SaveArr[p].carnumber+'">';
+								str += '</div></div></div>';
+								str += '<div class="allbtn"><button id="changeAll">修改</button>';
+								str += '<button id="submitAll">提交</button></div>'
+//								for(let u = 0 ; u < SaveArr[p].data.length ; u++){
+	//								console.log('checkname'+SaveArr[p].data[u].checkname);
+	//								console.log('scpguid'+SaveArr[p].data[u].scpguid);
+	//								console.log('scrguid'+SaveArr[p].data[u].scrguid);
+	//								str += '<input type="hidden" name="scpguid">';
+//								}
+								$('#saveContent').prepend(str);
+							}	
+							$('#savePro').show();
+						}
+					}
+				});
+			});
+			
+			let ScpArr = new Array(); //存放往车辆巡检传递scpguid的数组
+			let checkName = new Array(); //存放检查类型名字
+			function getData(){
+				$('.mui-content>.checktype').each(function(){
+					let plans =  parseInt($(this).find('.mui-icon-compose').html().split('：')[1]);
+					let finish = parseInt($(this).find('.mui-icon-checkmarkempty').html().split('：')[1]);
+					let modify_len = $(this).find('.hadsave').length;
+					if(plans> finish && modify_len < (plans-finish)){
+						let scp = $(this).find('input[name="scpguid"]').val();	
+						let cn = $(this).find('h4').find('span').html();
+						ScpArr.push(scp);	
+						checkName.push(cn);
+					}
+				});
+			}
+			
+			function checkData(){
+				if(ScpArr.length == 0){
+					$(".begin").remove();
+				}
+			}
+			
+			mui('#planContent').on('tap','button',function(){
+				if(ScpArr.length == 0){
+					mui.alert('所有计划已完成');
+				}else{					
+					mui.openWindow({
+						url : 'checkwithplan.html',
+						id : 'finishPlan',
+						extras:{
+							"optional" : "creatAll"	,
+							"scpdata" : ScpArr,
+							"planno" : planno
+						},
+						waiting:{
+							autoShow:false
+						}
+					});					
+				}
+			});						
+			
+			mui('#saveContent').on('tap','#changeAll',function(){
+				getCheckData('changeAll');
+			});
+			mui('#saveContent').on('tap','#submitAll',function(){
+				getCheckData('submit');
+			});	
+			
+			function getCheckData(type){
+				console.log(type);
+				let checkVal = $('input[type="radio"]:checked').val();
+				let tansData = null;
+				if(checkVal !== undefined){
+					for(let i = 0 ; i < SaveArr.length ; i++){
+						if(checkVal === SaveArr[i].carnumber){
+							tansData = SaveArr[i];
+							break;
+						}
+					}
+					console.log('车牌号：'+tansData.carnumber);
+					for(let j = 0 ; j < tansData.data.length ; j++){
+						console.log(tansData.data[j].checkname);
+						console.log(tansData.data[j].scpguid);
+						console.log(tansData.data[j].scrguid);
+					}
+					if(tansData != null){
+						if(type === 'changeAll'){
+							mui.openWindow({
+								url : 'checkwithplan.html',
+								id : 'finishPlan',
+								extras:{
+									"optional" : type,
+									"data" : tansData,
+									"planno" : planno
+								},
+								waiting:{
+									autoShow:false
+								}
+							});							
+						}else if(type === 'submit'){
+							let butn = ["确定","取消"];
+							mui.confirm('确定要提交此巡检结果？','提示',butn,function(e){
+								if(e.index == 0){
+									let count = 0;
+									for(let i = 0 ; i < tansData.data.length ; i++){
+										let scrguid = tansData.data[i].scrguid;
+										let scpguid = tansData.data[i].scpguid;
+										console.log('scrguid:'+scrguid);
+										console.log('scpguid:'+scpguid);
+										$.ajax({
+											url:config.SubmitRecord,
+											dataType:"json",	
+											type:"PUT",
+											async:false,
+											data:{"scrguid":scrguid,"scpguid":scpguid},
+											success:function(data){
+												count++;
+												console.log(count);
+											}	
+										});										
+									}	
+									if(count == tansData.data.length){
+										mui.alert('全部提交成功', '', function(){	
+											location.reload();
+											mui.fire(showPage,"reload",{
+											
+											});
+											mui.fire(lastPage,"refreshData",{
+							
+											});
+											mui.fire(schedule,"reloadData",{
+							
+											});
+										});										
+									}
+								}								
+							});
+						}
+					}else{
+						mui.alert('数据错误,请联系开发人员!');
+					}
+				}else{
+					mui.alert('请先选择要操作的车辆');
+				}
+			}
+			
+			window.addEventListener('reload',function(eve){
+				location.reload();	 //刷新页面重新获取数据	
+			});
+			
+		</script>
+	</body>
+	
+</html>

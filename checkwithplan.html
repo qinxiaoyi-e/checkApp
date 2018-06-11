@@ -1,0 +1,1204 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/mui.picker.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/mui.preview.css"/>
+		<script type="text/javascript" src="js/common.js" ></script>
+		<style>
+			body{
+				font-family: "微软雅黑";
+			}
+			/*
+			 * 开始:顶部bar
+			 */
+			header {
+				background-color: #6A7D8F !important;
+				color: #FAFAFA;
+			}
+			
+			h1 {
+				color: #FAFAFA !important;
+			}			
+			header,
+			h1 {
+				height: 50px !important;
+				line-height: 50px !important;
+			}
+			/*
+			 * 结束：顶部bar
+			 */	
+			.top-content{
+				padding: 10px !important;
+				margin-top: 50px;
+				width: 100%;
+				height: 160px;
+				background-color: #81C6CD;
+				/*position: fixed;*/
+			}
+			/*
+			 * 开始：车牌输入组件
+			 */	
+			 form{
+			 	margin-top: 5px;
+			 	width: 54%;
+			 	display: inline-block;
+			 }	
+			.lab-chepai{
+				text-align: center;
+				font-size: 15px;
+			}
+			.chepai{
+				font-size: 13px;
+				height: 35px !important;
+			}			
+			::-webkit-input-placeholder {
+				font-size: 13px;
+				text-align: center;
+			}
+			/*
+			 * 开始：按钮组
+			 */
+			.mui-content button{
+				margin-top: 5px;
+				height: 35px;
+			}
+			#weather{
+				background-color: #FAFAFA;
+				width: 44%;
+			}
+			#timetocar{
+				background-color: #FAFAFA;				
+				width: 49%;
+			}
+			.checkall{
+				margin-top: 5px;
+				height: 35px;
+				display: inline-block;
+				width: 49%;
+			}
+			.checkall label{
+				font-size: 13px;
+			}
+			#save,#subm{
+				margin-top: 10px;
+				width: 49%;
+			}
+			#btnsave,#btnsubmit{
+				margin-top: 0vh;
+				height: 5vh;
+				width: 25%;
+			}
+			/*
+			 * 结束：按钮组
+			 */	
+			 
+			/*
+			 * 开始：评分区
+			 */	
+			.checkContent{
+				padding: 0px !important;
+			} 	
+			.mui-content-padded {
+				margin: 0px !important;
+			}
+			
+			.mui-segmented-control {
+				border-radius: 0px;
+				font-size: 13px;
+			}
+			/*
+			 * 审核区div
+			 */
+			
+			/*.mui-control-content span {
+				font-size: 16px;
+				display: inline-block;
+				height: 10vh;
+				line-height: 10vh;
+				padding: 0 3vh;
+				margin-top: 1vh;
+			}*/
+			.lineblock{
+				display: block;
+				margin: 28px 20px;				
+			}
+			.mui-control-content .mui-icon-camera {
+				display: inline-block;
+				font-size: 30px;
+				line-height: 20px;
+				position: absolute;
+				left: 40%;
+			}
+			
+			.mui-control-content li {
+				font-size: 15px;
+			}
+			
+			.xpic {  /*拍照后显示的相册icon*/
+				width: 8vh !important;
+				height: 28px;
+				float: right;
+				margin-right: 2vh;
+				border-radius: 5px;
+				font-size: 25px !important;
+/*				display: none;*/
+			}
+			.checkContent img{
+				width: 50px;
+				height: 50px;
+				margin: 10px;
+				border-radius: 5px;
+			}
+			
+			#carnumtext{
+			    border: 1px solid #ccc;
+			    border-top-left-radius: 3px;
+			    border-bottom-left-radius: 3px;
+			    border-right: none;
+			    background-color: #fff;
+			    background-clip: padding-box;
+			}
+			#carnumber{
+			    border: 1px solid #ccc;
+			    border-top-right-radius: 3px;
+			    border-bottom-right-radius: 3px;
+			    border-left: none;
+			    background-color: #fff;
+			    background-clip: padding-box;	
+			}
+			
+			#timeoutarea{
+				width: 100%;
+			    position: absolute;
+			    top: 50px;
+			    bottom: 0px;
+			    left: 0px;
+				top: 210px;
+			}
+			#timeoutarea .timeout{
+				font-size: 16px;
+				text-align: center;
+				margin: 10px;
+				display: none;
+			}
+			.mui-badge{
+				font-size: 17px;
+				margin-top: 18px;
+			}
+			/*底部结束分割线*/
+			.endborder {
+				padding-top: 1px;
+			}
+	
+			.endborder hr {
+				border-top: 1px solid #AAAAAA;
+			}
+			/*底部结束分割线文字*/
+	
+			.hrtext {
+				position: relative;
+				width: 75px;
+				background-color: #EFEFF4;
+				left: 40%;
+				text-align: center;
+				top: -20px;
+				padding: 0 2%;
+				font-size: 15px;
+				color: #AAAAAA;
+			}	
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<span class="mui-icon mui-icon-arrowleft mui-action-back"></span>
+			<h1 class="mui-title">车辆巡检</h1>
+		</header>		
+		<div class="mui-content top-content">
+			<form class="mui-input-group" id="carRow">
+			    <div class="mui-input-row" style="height: 35px;" >
+			        <label class="lab-chepai" id="carnumtext">粤S</label>
+			        <input type="text" class="mui-input-clear chepai" maxlength="6" onpaste="return false" ondragenter="return false"  onkeyup="this.value=check(this.value)" placeholder="请输入车牌" id="carnumber">
+			        <input type="hidden" name="" id="way" value="" />			        
+			    </div>
+			</form>
+			<button type="button" class="mui-btn" id="weather">晴天</button>
+			<button type="button" class="mui-btn" id="timetocar">请选择上车时间</button>
+			<div class="mui-input-row mui-checkbox checkall">
+			  <label style="height: 6vh;">全选合格</label>
+			  <input name="checkbox1" value="Item 1" type="checkbox" class="sall">
+			</div>
+			<button type="button" data-loading-text="正在保存" class="mui-btn mui-btn-primary" id="save">保存</button>
+			<button type="button" data-loading-text="正在提交" class="mui-btn mui-btn-danger" id="subm">提交</button>	
+			<div id="SavePopover" class="mui-popover">
+			  <li class="mui-table-view-cell" style="list-style: none;">
+			  	<a href="#">请选择要保存的项目：</a>
+			  	<button type="button" class="mui-btn mui-btn-primary" id="btnsave">确定</button>
+			  </li>
+			</div>
+			<div id="SubmitPopover" class="mui-popover">
+			  <li class="mui-table-view-cell" style="list-style: none;">
+			  	<a href="#">请选择要提交的项目：</a>
+			  	<button type="button" class="mui-btn mui-btn-primary" id="btnsubmit">确定</button>
+			  </li>
+			</div>			
+		</div>
+		
+		
+		<div class="mui-content checkContent">
+			<div class="mui-content-padded">
+				<div class="mui-segmented-control">
+					
+				</div>
+			</div>		
+		</div>
+		
+		<div id="loading" class="loading" style='width:100%;height:100px;text-align:center;line-height:100px;vertical-align:center'>
+				<font style='font-size:20px'>正在加载...</font>
+		</div>
+		
+		<div id="timeoutarea">
+			<div class="mui-scroll">
+			<div class="timeout">
+				<div class="mui-badge mui-badge-warning">
+					请求超时,请点击屏幕进行数据刷新
+				</div>
+			</div>
+			</div>
+		</div>
+			
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/mui.picker.min.js"></script>
+		<script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+		<script type="text/javascript" src="js/mui.zoom.js" ></script>
+		<script type="text/javascript" src="js/mui.previewimage.js" ></script>		
+		<script type="text/javascript">
+			mui.init({
+				swipeBack:true,
+			});
+			var files=[]; //存放图片的变量
+			var optional = "";
+			var scpdata = new Array();
+			var num = 1;//拍照图标标识符,作为id名称
+			var tabid = 0; //选项卡id
+			var lastPage = null;
+			var planno = '';
+			var showPage = null;
+			var schedule = null;
+			var checkPlanPage = null;
+			var hasManyi = false;
+			mui.previewImage();
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();				
+				optional = self.optional;
+				planno = self.planno;
+				lastPage = self.opener();
+				showPage = plus.webview.getWebviewById('show.html');
+				checkPlanPage = plus.webview.getWebviewById('checkplan.html');
+				ListsLoad();
+				
+				function ListsLoad(){
+				var role = window.localStorage["role"];
+				schedule=plus.webview.getWebviewById(role);
+				if(optional == "creatAll"){ //从上一页面传过来的是全部新增
+					scpdata = self.scpdata;	//获取上一计划中全部的计划主键
+					for(var i = 0; i<scpdata.length; i++){
+						tabid = i; 
+						$.ajax({
+							type:"GET",
+							url:config.getCheckPlanByNum+'/'+scpdata[i], //通过计划主键获取相应的计划检查项
+							dataType:"json",
+							async:false,
+							timeout : 5000,
+							success:function(data){
+								$("#loading")[0].style.display = 'none';
+								$("#timeoutarea").remove();
+								var htex = "";
+								var checktex = "";
+								if($('#way').val() == ""){
+									$('#way').val(data.checkline);	//填充计划对应的路线						
+								}
+								if(i == 0){
+									htex+= '<a class="mui-control-item mui-active" href="#item'+i+'">'+data.typename+'</a>' ;								
+									checktex+= '<div id="item'+i+'" class="mui-control-content mui-active">';
+								}else{
+									htex+= '<a class="mui-control-item" href="#item'+i+'">'+data.typename+'</a>' ;
+									checktex+= '<div id="item'+i+'" class="mui-control-content">';
+								}
+								checktex+='<input type="hidden" name="scpguid" value="'+data.scpguid+'">';
+								checktex+='<input type="hidden" name="scrguid" value="">';
+								checktex+='<input type="hidden" name="checktype" value="'+data.checktype+'"></div>';								
+								$('.mui-segmented-control').append(htex);
+								$('.checkContent').append(checktex);
+								$.ajax({
+									type:"GET",
+									url:config.getCheckItem, //通过计划检查项请求该检查项对应所有的检查项目
+									dataType:"json",
+									async:false,
+									data:{"checktype":data.checktype,
+										  "numPerPage":"50"
+									},
+									success:function(data){
+										var list = data.jsonData.list;
+										for(var j=0;j<list.length;j++){ //遍历检查项对应的检查项目
+											var inner = '';
+											inner+='<div class="check">';
+												inner+='<div class="lineblock">';
+												inner+='<span class="checkname">'+list[j].itemname+'</span>';
+		//										<!--<img src="images/1.png" class="xpic" id="pic1" data-preview-src="" data-preview-group="1"/>-->
+												inner+='<span class="mui-icon mui-icon-camera" id="ca'+num+'"></span>';
+												inner+='</div>';
+												inner+='<input type="hidden" name="sccguid" value="'+list[j].sccguid+'">';
+												inner+='<input type="hidden" name="scdguid" value="">';
+												inner+='<ul class="mui-table-view mui-table-view-radio">';
+												    if(list[j].escore!=-1){
+												    	inner+='<li class="mui-table-view-cell excellent">';
+															inner+='<a class="mui-navigate-right">优秀</a>';
+															inner+='<input type="hidden" value="'+list[j].escore+'" />';
+														inner+='</li>';
+												    }
+												    if(list[j].gscore!=-1){
+														inner+='<li class="mui-table-view-cell fine">';
+															inner+='<a class="mui-navigate-right">良好</a>';
+															inner+='<input type="hidden" value="'+list[j].gscore+'" />';
+														inner+='</li>';											    	
+												    }
+												    if(list[j].mscore!=-1){
+														inner+='<li class="mui-table-view-cell pass">';
+															inner+='<a class="mui-navigate-right">合格</a>';
+															inner+='<input type="hidden" value="'+list[j].mscore+'" />';
+														inner+='</li>';										    	
+												    }
+												    if(list[j].bscore!=-1){
+														inner+='<li class="mui-table-view-cell fail">';
+															inner+='<a class="mui-navigate-right">不合格</a>';
+															inner+='<input type="hidden" value="'+list[j].bscore+'" />';
+														inner+='</li>';										    	
+												    }										
+												inner+='</ul>';
+											inner+='</div>';
+//											if(j == list.length - 1){
+//												inner+='<h5 style="text-align:center;">到底了</h5>';
+//											}
+											num++;
+											$('#item'+tabid).append(inner);		
+										}	
+										$('#item'+tabid).append('<div class="mui-input-row" style="margin: 10px 5px;"><textarea id="textarea" rows="5" placeholder="巡检备注(选填)"></textarea></div>');
+										$('#item'+tabid).append('<div class="endborder checkedlist"><hr><div class="hrtext">到底啦</div></div>');										
+									}
+								});
+							},
+							error : function(data) {
+								$("#loading")[0].style.display = 'none';
+								$(".timeout")[0].style.display = 'block';
+								mui.toast('请求超时,请再次点击屏幕进行数据刷新');
+								console.log('请求超时');	
+								
+							}
+						});						
+					}
+					var ckmanyi = $('.mui-segmented-control').find('a').html();
+					console.log(ckmanyi);
+					if(ckmanyi == '乘客满意度'){
+						$('#carRow').hide();
+						$('.checkall').hide();
+						$('.top-content').css('height','18vh');
+						hasManyi = true;
+					}
+				}else if(optional == "changeAll"){ //从上一页面点击某一项的修改按钮
+					console.log('要修改啦');
+					$('#carnumber').val(self.data.carnumber.substr(2));
+					var data = self.data.data;
+					var tabid = null;
+					console.log(data.length);
+					for(var i = 0 ; i < data.length ; i++){     //
+						var scrguid = data[i].scrguid;
+						var scpguid = data[i].scpguid;
+						var htex = '';
+						var checktex = '';
+						tabid = i;
+						if(i===0){
+							htex = '<a class="mui-control-item mui-active" href="#item'+i+'">'+data[i].checkname+'</a>';							
+							checktex +='<div id="item'+i+'" class="mui-control-content mui-active">';
+						}else{
+							htex = '<a class="mui-control-item" href="#item'+i+'">'+data[i].checkname+'</a>';
+							checktex +='<div id="item'+i+'" class="mui-control-content">';
+						}
+						checktex += '<input type="hidden" name="scrguid" value="'+scrguid+'"/>';
+						checktex += '<input type="hidden" name="scpguid" value="'+scpguid+'"/>';
+						checktex += '<input type="hidden" name="checktype" value="" /></div>';
+						$('.mui-segmented-control').append(htex);
+						$('.checkContent').append(checktex);
+						$.ajax({
+							type:"GET",
+							url:config.getCheckedItemDetail,
+							dataType:"json",
+							async:false,
+							data:{
+								"scrguid":scrguid,
+								"numPerPage":100
+							},
+							success:function(data){
+								console.log('拿到记录！');
+								var list=data.jsonData.list;
+								if(i === 0){
+									$('#way').val(list[0].CHECKLINE);
+									$('#weather').html(list[0].WEATHER);
+									$('#timetocar').html(list[0].BUSTIME);														
+								}
+								$('#item'+tabid).find("input[name='checktype']").val(list[0].CHECKTYPE);
+								$.ajax({
+									type:"get",
+									url:config.getCheckItem,
+									dataType:"json",
+									async:false,
+									data:{
+										"checktype":list[0].CHECKTYPE,
+										"numPerPage":"50"
+									},
+									success:function(data){
+										console.log('拿到模板！');
+										var list1 = data.jsonData.list;
+										for(var j=0;j<list1.length;j++){										
+											var inner = '';
+											inner+='<div class="check">';
+												inner+='<div class="lineblock">';
+												inner+='<span class="checkname">'+list1[j].itemname+'</span>';
+												inner+='<span class="mui-icon mui-icon-camera" id="ca'+num+'"></span>';
+												inner+='</div>';
+												inner+='<input type="hidden" name="sccguid" value="'+list1[j].sccguid+'">';
+												inner+='<input type="hidden" name="scdguid" value="'+list[j].SCDGUID+'">';
+												inner+='<ul class="mui-table-view mui-table-view-radio">';
+													   if(list1[j].escore!=-1){
+														   	if(list[j].CHECKSCORE == list1[j].escore){ //如果记录中的分值等于检查项默认分则赋予选中的样式(添加mui-selected类)
+														   		inner+='<li class="mui-table-view-cell excellent mui-selected">';												   		
+														   	}else{
+														   		inner+='<li class="mui-table-view-cell excellent">';	
+														   	}
+																inner+='<a class="mui-navigate-right">优秀</a>';
+																inner+='<input type="hidden" value="'+list1[j].escore+'" />';
+															inner+='</li>';
+													   }
+												   		if(list1[j].gscore!=-1){
+												   			if(list[j].CHECKSCORE == list1[j].gscore){
+												   				inner+='<li class="mui-table-view-cell fine mui-selected">';
+												   			}else{
+												   				inner+='<li class="mui-table-view-cell fine">';
+												   			}
+														
+															inner+='<a class="mui-navigate-right">良好</a>';
+															inner+='<input type="hidden" value="'+list1[j].gscore+'" />';
+															inner+='</li>';											    	
+													   }
+													   if(list1[j].mscore!=-1){
+													   	if(list[j].CHECKSCORE == list1[j].mscore){
+													   		inner+='<li class="mui-table-view-cell pass mui-selected">';
+													   	}else{
+													   		inner+='<li class="mui-table-view-cell pass">';
+													   	}
+															inner+='<a class="mui-navigate-right">合格</a>';
+															inner+='<input type="hidden" value="'+list1[j].mscore+'" />';
+															inner+='</li>';										    	
+													   }
+													   if(list1[j].bscore!=-1){
+													   	if(list[j].CHECKSCORE == list1[j].bscore){
+													   		inner+='<li class="mui-table-view-cell fail mui-selected">';
+													   	}else{
+													   		inner+='<li class="mui-table-view-cell fail">';
+													   	}
+															inner+='<a class="mui-navigate-right">不合格</a>';
+															inner+='<input type="hidden" value="'+list1[j].bscore+'" />';
+														inner+='</li>';	
+												 	   }											
+												inner+='</ul>';
+												if(list[j].IMGURL!=null){ //判断记录中有无图片
+														var arrays = list[j].IMGURL.split(",");
+														for(var i = 0 ; i<arrays.length ; i++){
+															if(arrays[i] != ''){
+																console.log(arrays[i]);
+																var fullname = arrays[i].substr(arrays[i].lastIndexOf('/')+1);
+																var filen = fullname.split('.')[0];
+																inner+='<img src="'+arrays[i]+'" id="'+filen+'" class="pic'+num+'" data-preview-src="" data-preview-group="'+num+'"/>';															
+															}
+														}	
+												}
+											inner+='</div>';
+											num++;
+											$('#item'+tabid).append(inner);		
+										}
+										var content = list[0].RREMARK == null ? "" : list[0].RREMARK;
+										$('#item'+tabid).append('<div class="mui-input-row" style="margin: 10px 5px;"><textarea id="textarea" rows="5" placeholder="巡检备注(选填)">'+content+'</textarea></div>');
+										$('#item'+tabid).append('<h5 style="text-align:center;">--到底了--</h5>');										
+									}
+								});
+							}
+						});
+					}
+					var ckmanyi = $('.mui-segmented-control').find('a').html();
+					console.log(ckmanyi);
+					if(ckmanyi == '乘客满意度'){
+						$('#carRow').hide();
+						$('.checkall').hide();
+						$('.top-content').css('height','18vh');
+						hasManyi = true;
+					}
+				}
+				
+			
+				/*
+				 * 监听每个评分项目的拍照icon
+				 */
+				$('.mui-control-content>div>div>.mui-icon-camera').each(function(){
+					mui('.mui-control-content>div').on("tap","#"+$(this).attr('id')+"",function(){
+						if($('#carnumber').val() == ""){
+							mui.alert('请先填写车牌');
+						}else{
+							carid = $(this).attr('id');
+							plus.nativeUI.actionSheet({title:"选择照片",cancel:"取消",buttons:[{title:"即时拍照"},{title:"从相册选取"}]}, function(e){
+								switch (e.index){
+									case 0:
+										break;
+									case 1:
+										console.log("用户点击了ID为"+carid+"的相机按钮,接下来的操作是：拍照获取相片");
+										captureImage(carid);
+										break;
+									case 2:
+										console.log("用户点击了ID为"+carid+"的相机按钮,接下来的操作是：选取现有相片");
+										galleryImg(carid);
+										break;
+									default:
+										break;
+								}
+							});								
+						}
+					});
+				});
+				}//ListsLoad封尾
+				/*
+				 * 监听icon结束
+				 */
+			
+			mui('body').on('tap','#timeoutarea',function(){
+					ListsLoad();
+			});	
+			
+			});
+//			}
+			
+			/*
+			 * 开始：从相册中选取图片
+			 */
+				function galleryImg(carid) {
+//					var picid = 'pic'+carid.toString().replace(/ca/g, "");
+//					console.log("从相册中选择图片:");
+				    plus.gallery.pick( function(path){
+//				    	console.log(path);
+//				    	var pic = document.getElementById(picid+'');
+						appendFile(path,carid);
+				    }, function ( e ) {
+				    	console.log( "取消选择图片" );
+				    }, {filter:"image"} );
+				}
+			/*
+			 * 结束：从相册中选取图片
+			 */
+			
+			/*
+			 * 拍照模块开始
+			 */				
+				function captureImage(carid) {
+					var cmr = plus.camera.getCamera();
+					var res = cmr.supportedImageResolutions[0];
+					var fmt = cmr.supportedImageFormats[0];
+//					var picid = 'pic'+carid.toString().replace(/ca/g, "");
+//					console.log("Resolution: " + res + ", Format: " + fmt);
+					cmr.captureImage(function(e) {
+//							alert("Capture image success: " + e);
+							plus.io.resolveLocalFileSystemURL(e, function(entry) {
+								var path = entry.toLocalURL();
+								appendFile(path,carid);
+
+							})
+						},
+						function(error) {
+							console.log("图片获取失败,原因为: " + error.message);
+						}, {
+							resolution: res,
+							format: fmt
+						}
+					);
+				}
+			/*
+			 * 拍照模块结束
+			 */
+			/*
+			 * 开始：图片压缩
+			 */
+				var imgArr = [];//存放图片base64的数组
+				var imgNum = [];//图片编号数组
+				var num = 0;
+				function appendFile(path,carid){
+					var cargroup = 0; //相片组标识组号
+					var carnum = carid.toString().replace(/ca/g, ""); //筛选剩数字
+					var picid = 'pic'+carnum;
+					console.log(path);
+					
+					var img = new Image();
+				        img.src = path;        // 传过来的图片路径在这里用。
+				        img.onload = function () {
+				            var that = this;
+				            //生成比例 
+				            var w = that.width,
+				                h = that.height,
+				                scale = w / h; 
+				                w = 480 || w;              //480  你想压缩到多大，改这里
+				                h = w / scale;
+				
+				            //生成canvas
+				            var canvas = document.createElement('canvas');				
+				            var ctx = canvas.getContext('2d');	
+				            var imgfile;
+				            $(canvas).attr({width : w, height : h});			
+				            ctx.drawImage(that, 0, 0, w, h);
+				            /*
+				             * 水印绘制开始
+				             */
+				            ctx.font = "15px microsoft yahei";
+				            ctx.fillStyle = "#FAFAFA";
+             				ctx.fillText('线路：'+$('#way').val(),5,h-67);
+             				ctx.fillText('车牌：粤S '+$('#carnumber').val(),5,h-48);
+				            ctx.fillText('巡检项目：'+$('#'+carid).parent().find('.checkname').html(),5,h-29);             				
+             				ctx.fillText("拍摄时间："+getNow(),5,h-10); 
+             				/*
+             				 * 水印绘制结束
+             				 */
+				            var base64 = canvas.toDataURL('image/jpeg', 1 || 0.8 ); //将图片转化成base64
+				            base64tobitmap(base64,picid,carid); //从base64转为图片，并保存到系统文件目录下
+				    	}
+				
+				}
+				/*
+				 * 结束：图片压缩
+				 */
+				
+				/*
+				 * 将base64图片转为bitmap图片再保存到本地,待图片保存完后对相册按钮进行监听
+				 */
+				var flagkey = 1;
+				function base64tobitmap(base64,picid,carid){
+					var bitmap = new plus.nativeObj.Bitmap();
+					bitmap.loadBase64Data(base64,function(){						
+						var timestamp = (new Date()).valueOf();
+						bitmap.save("_doc/"+picid+"-"+timestamp+".jpg",{
+							overwrite:true,
+							quality:100
+						},function(eve){
+							console.log('图片保存成功,路径为：'+eve.target+',大小为:'+eve.size);
+							var fullname=eve.target.substr(eve.target.lastIndexOf('/')+1);
+							var filen = fullname.split('.')[0];
+							console.log(filen);
+							files.push({name:"uploadkey"+flagkey,path:eve.target});
+							flagkey++;
+							if($("#"+picid).length<=0){									
+				            	$("#"+carid).before('<span class="mui-icon mui-icon-image xpic" id="'+picid+'"></span>');
+				            	$("#"+picid).before('<img src="'+eve.target+'" id="'+filen+'" class="'+picid+'" style="display:none;" />');
+//				            	$("#"+picid).before('<input type="hidden" class="filename" value="'+filen+'" />');
+				            	mui.toast('图片添加成功,点击右方图标进行查看。');
+				            	mui('.mui-control-content').on('tap','#'+picid,function(){
+				            		$('.'+picid).each(function(){
+				            			if($.inArray($(this).attr('src'),imgArr) == -1){//判断数组中有无该图片
+				            				imgArr.push(picid,$(this).attr('src'));
+				            				imgNum.push(num++);
+				            			}
+				            		})
+									
+				            		mui.openWindow({
+										url: 'album.html',
+										id: 'album',
+										extras:{
+											imgArray: imgArr,
+											imgNumber: imgNum,
+											curCarid: picid
+										},
+										waiting:{
+											autoShow:false
+										}
+									});
+									imgArr.splice(0,imgArr.length); //当前栏目的图片显示至相册后清空数组，等待一下次Tap事件重新获取图片
+				            	})
+							}else{
+								$("#"+picid).before('<img src="'+eve.target+'" id="'+filen+'" class="'+picid+'" style="display:none;" />');
+//								$("#"+picid).before('<input type="hidden" class="filename" value="'+filen+'" />');
+								mui.toast('图片添加成功,点击右方图标进行查看。');
+							}							
+						},function(error){
+							console.log('图片保存失败,原因：'+error.Message);
+						});
+					},function(e){
+						console.log('图片加载失败,原因：'+e.Message);
+					})
+				}
+				/*
+				 *格式化当前时间 
+				 */
+				function getNow(){
+					var myData = new Date();
+					var year = myData.getFullYear();
+					var month = myData.getMonth()+1;
+					var ndate = myData.getDate();
+					var h = myData.getHours();
+					var m = myData.getMinutes();
+					var s = myData.getSeconds();
+					var now = year+'-'+p(month)+"-"+p(ndate)+" "+p(h)+':'+p(m)+":"+p(s);
+					return now;
+				}
+				function p(s) {
+	    			return s < 10 ? '0' + s: s;
+				}
+				
+				/*
+				 *监听imgArr参数的改变 ,如果照片在相册被删除则重新遍历DOM
+				 */
+				window.addEventListener('changePic',function(event){
+					var data = event.detail.data;
+					if(data.length == 1){ //相册数组被完全删除后会自动记录图片按钮ID
+	//					console.log('id为'+data[0]+'的相册已清空!');
+						$('.'+data[0]).remove();
+						$('#'+data[0]).remove();
+						files.splice(0,files.length);//清空图片数组
+						
+					}else if($('.'+data[0]).length != data.length/2){
+						files.splice(0,files.length);//清空图片数组
+						$('.'+data[0]).remove();
+						for(var j=0;j<data.length/2;j++){
+							console.log(data[2*j]);
+							console.log(data[2*j+1]);
+							var fullname = data[2*j+1].substr(data[2*j+1].lastIndexOf('/')+1);
+							var filen = fullname.split('.')[0];
+							console.log(filen);
+							files.push({name:"uploadkey"+filen,path:data[2*j+1]});
+							$('#'+data[2*j]).before('<img src="'+data[2*j+1]+'" id="'+filen+'" class="'+data[2*j]+'" style="display:none;" />');
+						}
+						console.log(files.length);
+					}else{
+						console.log('未删除相片');
+					}
+				});				
+			
+			//天气选择器
+			var weather_picker = new mui.PopPicker();
+			picker_initial();
+			function picker_initial(){
+					weather_picker.setData([{
+						value: "overcast",
+						text: "阴天"
+					}, {
+						value: "blustery",
+						text: "大风"
+					}, {
+						value: "sunny",
+						text: "晴天"
+					}, {
+						value: "haze",
+						text: "雾霾"
+					}, {
+						value: "shower",
+						text: "阵雨"
+					}, {
+						value: "rainstorm",
+						text: "暴雨"
+					}])
+					weather_picker.pickers[0].setSelectedValue('sunny',2000);					
+			}
+			
+			mui('.top-content').on('tap','#weather',function(){ 
+				weather_picker.show(function(SelectedItem) {
+					var weather = document.getElementById('weather');
+					weather.innerHTML = SelectedItem[0].text;
+					weather.style.color = '#FAFAFA';
+					weather.style.backgroundColor = '#2AC845';
+				});				
+			});
+			
+			//时间选择器
+			mui('.top-content').on('tap','#timetocar',function(){
+				var dtPicker = new mui.DtPicker();
+					dtPicker.show(function(selectItems) {
+						var times = document.getElementById('timetocar');
+						times.innerHTML = selectItems.value;
+						times.style.color = '#FAFAFA';
+						times.style.backgroundColor = '#2AC845';
+						dtPicker.dispose();
+					});					
+			});
+			
+			/*
+			 * 全选监听事件开始
+			 */
+				var index = 0;//选中的选项卡索引
+				mui('.mui-segmented-control').on("tap",".mui-control-item",function(){
+					index = $(this).index();
+					$('.checkContent>.mui-control-content').eq(index).find('.pass').each(function(){
+						if($(this).hasClass('mui-selected')){
+							$(".sall").prop("checked", true);
+						}else{
+							$(".sall").prop("checked", false);//jq高于1.6必须使用prop来对元素属性的布尔值进行操作，若在元素标签中可见的如src就用attr	
+						}
+					});				
+				});
+				mui('.top-content').on("tap",".checkall",function(){ //onclick 与 ontap 的checked的初始属性值相反，click为true，tap为false
+					_this = $('.checkall').find('.sall')[0];
+					var isAll = _this.checked;
+					if(isAll == false){
+						$('.checkContent>.mui-control-content').eq(index).find('.pass').each(function(){
+							if(!$(this).hasClass('mui-selected'))
+								$(this).addClass('mui-selected');
+						});	
+						$('.checkContent>.mui-control-content').eq(index).find('.fail').each(function(){
+							if($(this).hasClass('mui-selected'))
+								$(this).removeClass('mui-selected');
+						});
+						$('.checkContent>.mui-control-content').eq(index).find('.excellent').each(function(){
+							if($(this).hasClass('mui-selected'))
+								$(this).removeClass('mui-selected');
+						});
+						$('.checkContent>.mui-control-content').eq(index).find('.fine').each(function(){
+							if($(this).hasClass('mui-selected'))
+								$(this).removeClass('mui-selected');
+						});						
+					}else{
+						$('.checkContent>.mui-control-content').eq(index).find('.pass').each(function(){
+							if($(this).hasClass('mui-selected'))
+								$(this).removeClass('mui-selected');
+						});
+					}
+					
+				});
+			/*
+			 * 全选事件监听结束
+			 */	
+			/*
+			 * 开始：保存及提交loading动画函数
+			 */
+				//保存
+				var Savehtex = '';
+				var Submithtex = '';
+				mui('.top-content').on('tap', '#save', function(e) {		
+					if(Savehtex == ""){
+						$('.mui-control-item').each(function(){
+							Savehtex+='<div class="mui-input-row mui-checkbox">';
+		  					Savehtex+='<label>'+$(this).html()+'</label>';
+		  					Savehtex+='<input name="checkbox1" value="'+$(this).attr('href')+'" type="checkbox"></div>';
+		  					console.log($(this).attr('href'));
+						});
+						$('#SavePopover').append(Savehtex);						
+					}
+					if(hasManyi){
+						if($('#timetocar').html() == '请选择上车时间'){
+							mui.alert('请先选择上车时间');
+						}else{
+							checkedByitem('#SavePopover');
+							mui('#SavePopover').popover('show',this);																		
+						}
+					}else{
+						if($('#carnumber').val()=="" ||$('#timetocar').html() == '请选择上车时间'){
+							mui.alert('请将巡检信息填写完整');
+						}else{
+							checkedByitem('#SavePopover');
+							mui('#SavePopover').popover('show',this);																									
+						}
+					}
+				});
+				mui('#SavePopover').on('tap','#btnsave',function(){
+					mui('#SavePopover').popover('hide',this);
+					var SaveObject = $('#SavePopover').find("input[name='checkbox1']:checked");					
+					upload(SaveObject,'save');				
+					mui('#save').button('loading');					
+				});	
+				
+				
+				//提交
+				mui('.top-content').on('tap', '#subm', function(e) {
+					if(Submithtex == ""){
+						$('.mui-control-item').each(function(){
+							Submithtex+='<div class="mui-input-row mui-checkbox">';
+		  					Submithtex+='<label>'+$(this).html()+'</label>';
+		  					Submithtex+='<input name="checkbox2" value="'+$(this).attr('href')+'" type="checkbox"></div>';
+						});	
+						$('#SubmitPopover').append(Submithtex);
+					}
+					if(hasManyi){
+						if($('#timetocar').html() == '请选择上车时间'){
+							mui.alert('请先选择上车时间');
+						}else{
+							checkedByitem('#SubmitPopover');
+							mui('#SubmitPopover').popover('show',this);																	
+																			
+						}
+					}else{
+						if($('#carnumber').val()=="" ||$('#timetocar').html() == '请选择上车时间'){
+							mui.alert('请将巡检信息填写完整');
+						}else{
+							checkedByitem('#SubmitPopover');
+							mui('#SubmitPopover').popover('show',this);																									
+						}
+					}					
+				});
+				mui('#SubmitPopover').on('tap','#btnsubmit',function(){
+					mui('#SubmitPopover').popover('hide',this);
+					var SubmitObject = $('#SubmitPopover').find("input[name='checkbox2']:checked");
+					upload(SubmitObject,'submit');					
+					mui('#subm').button('loading');						
+				});				
+			/*
+			 * 结束：保存及提交loading动画函数
+			 */
+			function checkedByitem(OptionItem){
+				$('.mui-content>.mui-control-content').each(function(){
+					var checkLen = $(this).children('.check').length;
+					var hadCheckLen = $(this).find('.mui-selected').length;
+					var finishId = $(this).attr('id');
+					console.log('id:'+finishId);
+					var inputVal = "";
+					switch (finishId){
+						case 'item0':
+							inputVal = '#item0';
+							break;
+						case 'item1':
+							inputVal = '#item1';
+							break;
+						case 'item2':
+							inputVal = '#item2';
+							break;											
+						default:
+							break;
+					}								
+					if(checkLen === hadCheckLen){	
+						var finishItem = $('.mui-segmented-control').find("[href='#"+finishId+"']").html();
+						console.log(finishId);
+						console.log($('.mui-segmented-control').find("[href='#"+finishId+"']").html());
+						$(OptionItem).find("input[value='"+inputVal+"']").prop('checked',true);
+					}else{
+						$(OptionItem).find("input[value='"+inputVal+"']").prop('checked',false);
+					}
+				});				
+			}			
+			
+			function DataOperation(uploaditem,OptionType){
+						console.log('可以开始上传了');
+						console.log('要上传的项目的数组长度：'+uploaditem.length);
+						var issubmit = OptionType == "save" ? 0 : 1;
+						var alertText = OptionType == "save" ? '保存成功' : '提交成功';						
+						var succRes = 0;
+						var saveContent = new Array();
+						for(var i=0;i<uploaditem.length;i++){
+							console.log(uploaditem[i]);
+							var itemArray = {};
+							var detailArray = new Array();//存放单项评选数据的数组
+							$('#'+uploaditem[i]+'>.check').each(function(){
+								var sccguid=$(this).find("input[name='sccguid']").val();
+								var scdguid=$(this).find("input[name='scdguid']").val();
+								var checkScore = $(this).children('ul').find('.mui-selected').find("input").val();
+								var imggroup = $(this).find('img').length;
+								var imgurl = '';
+								if(imggroup>0){
+									$(this).find('img').each(function(){
+										imgurl += config.imageShow+'/'+$(this).attr('id')+".jpg,";
+									});		
+									imgurl = imgurl.trim(',');
+								}
+								console.log("sccguid:"+sccguid);
+								console.log("scdguid:"+scdguid);
+								console.log("checkScore:"+checkScore);
+								console.log("imgurl:"+imgurl);
+								console.log("################");								
+								var detailJson = {"scdguid":scdguid,"sccguid":sccguid,"checkscore":checkScore,"imgurl":imgurl};
+								detailArray.push(detailJson);
+							});	
+							itemArray={"scrguid":$('#'+uploaditem[i]).find('input[name="scrguid"]').val(),
+									 "scpguid":$('#'+uploaditem[i]).find('input[name="scpguid"]').val(),
+									 "busno":$('#carnumber').val(),
+									 "remark": $('#'+uploaditem[i]+'>.mui-input-row>textarea').val(),
+									 "weather":$('#weather').html(),
+									 "bustime":$('#timetocar').html(),
+									 "issubmit":issubmit+'',   //0:保存，1:提交
+									 "checkline" : $('#way').val(),
+									 "pageFlag":"0",
+									 "checktype": $('#'+uploaditem[i]).find("input[name='checktype']").val(),
+									 "planno":planno,
+									 "detail":detailArray
+							};
+							console.log('scrguid:'+itemArray.scrguid);
+							console.log('scpguid:'+itemArray.scpguid);
+							console.log('busno:'+itemArray.busno);
+							console.log('weather:'+itemArray.weather);
+							console.log('bustime:'+itemArray.bustime);
+							console.log('issubmit:'+itemArray.issubmit);
+							console.log('checkline:'+itemArray.checkline);
+							console.log('checktype:'+itemArray.checktype);
+							console.log('planno:'+itemArray.planno);
+							console.log('detail-length:'+itemArray.detail.length);
+							console.log('detail-scdguid:'+itemArray.detail[0].scdguid);
+							console.log('detail-sccguid:'+itemArray.detail[0].sccguid);
+							console.log('detail-checkscore:'+itemArray.detail[0].checkscore);
+							console.log('detail-imgurl:'+itemArray.detail[0].imgurl);
+							saveContent.push(itemArray);							
+						}
+						$.ajax({
+							url:config.TempCheckPlanOperation,
+							dataType:"json",	
+							type:"POST",
+							async:false,
+							data:{
+								"saveContent":JSON.stringify(saveContent)
+							},
+							success:function(data){
+								succRes++;
+							},
+							error:function(xhr,type,errorThrown){
+								//异常处理；
+								console.log(errorThrown);
+							}
+						});						
+						console.log('succ:'+succRes);
+						var ALtext = '';
+						if(succRes === 1){
+							ALtext = alertText;								
+						}else{
+							ALtext = '计划操作失败,请重新操作';
+						}
+						if(issubmit == 0){
+							mui('#save').button('reset');
+						}else{
+							mui('#subm').button('reset');
+						}	
+						
+						mui.alert(ALtext,'',function(){
+							mui.fire(lastPage,"reload",{									
+								
+							});
+							if(issubmit == 1){
+								mui.fire(showPage,"reload",{
+									
+								});
+								mui.fire(checkPlanPage,"refreshData",{
+					
+								});
+								mui.fire(schedule,"reloadData",{
+					
+								});								
+							}
+							mui.back();
+						});
+			}	
+			
+			
+		// 上传文件
+		var server=config.imageUpload;
+		
+		function upload(Htmlobject,OptionType){
+			var item = '';
+			var emptyli = 0;
+			var uploaditem = new Array();
+			var issubmit = OptionType == "save" ? 0 : 1;
+			var alertText = OptionType == "save" ? '保存成功' : '提交成功';
+			if(Htmlobject.length == 0){
+				mui.alert('请选择要保存的项目',function(){
+					if(issubmit == 0){
+						mui('#save').button('reset');
+					}else{
+						mui('#subm').button('reset');
+					}					
+				});
+			}else{
+				Htmlobject.each(function(){
+					var choice = $(this).val();
+					switch (choice){
+						case '#item0':
+							item = 'item0';
+							break;
+						case '#item1':
+							item = 'item1';
+							break;
+						case '#item2':
+							item = 'item2';
+							break;
+						case '#item3':
+							item = 'item3';
+							break;									
+					}	
+					uploaditem.push(item);
+					var HadChecked = $('#'+item+'>div').children('ul').find('.mui-selected');
+					var quantity = 2; //默认只有及格与不及格两个选项
+					if($('a[href="#'+item+'"]').html() == "乘客满意度"){//乘客满意度为特例需要变更为4个
+						quantity = 4;
+					}
+					console.log('h:'+HadChecked.length);
+					var NeedtoCheckLength = $('#'+item+'>div').children('ul').find('li').length/quantity;
+					console.log('n:'+NeedtoCheckLength);
+					if(HadChecked.length<NeedtoCheckLength){
+						emptyli++;
+					}					
+				});	
+				if(emptyli>0){
+					console.log(emptyli);
+					mui.alert('请先对所有需上传的巡检项目进行评分',function(){
+						if(issubmit == 0){
+							mui('#save').button('reset');
+						}else{
+							mui('#subm').button('reset');
+						}						
+					});						
+				}else{
+						console.log(server);
+						var task=plus.uploader.createUpload(server,
+							{method:"POST"},
+							function(t,status){ //上传完成
+								if(status==200){
+									console.log("上传成功")
+									var filename=t.responseText.split(",");
+									for(var i=0;i<filename.length-1;i++){
+										var oldname=filename[i].split(".")[0];
+										var newname=filename[i].split(".")[2];
+										$('img').each(function(){
+											if($(this).attr('id') == oldname){
+												$(this).attr('id',newname);
+											}
+										});
+									}
+									plus.storage.setItem("uploader",t.responseText);
+									DataOperation(uploaditem,OptionType);
+								}else{
+									console.log("上传失败")
+			//						wt.close();
+								}
+							}
+						);
+						task.addData("client","HelloH5+");
+						task.addData("uid",getUid());
+						for(var i=0;i<files.length;i++){
+							var f=files[i];
+							task.addFile(f.path,{key:f.name});
+						}
+						task.start();
+					}					
+				}
+			}
+		
+			
+			
+			// 产生一个随机数
+			function getUid(){
+				return Math.floor(Math.random()*100000000+10000000).toString();
+			}
+		</script>
+	</body>
+
+</html>
